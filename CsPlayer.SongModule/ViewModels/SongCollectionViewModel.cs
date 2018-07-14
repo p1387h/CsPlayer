@@ -1,10 +1,12 @@
-﻿using Prism.Mvvm;
+﻿using Prism.Commands;
+using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace CsPlayer.SongModule.ViewModels
 {
@@ -25,7 +27,37 @@ namespace CsPlayer.SongModule.ViewModels
             set { SetProperty<ObservableCollection<string>>(ref _displayedSongPaths, value); }
         }
 
+        public ICommand ButtonClear { get; private set; }
+        public ICommand ButtonClearInvalid { get; private set; }
+        public ICommand ButtonCheck { get; private set; }
+        public ICommand ButtonAdd { get; private set; }
+
         public SongCollectionViewModel()
+        {
+            ButtonClear = new DelegateCommand(ButtonClearClicked);
+            ButtonClearInvalid = new DelegateCommand(ButtonClearInvalidClicked);
+            ButtonCheck = new DelegateCommand(ButtonCheckClicked);
+            ButtonAdd = new DelegateCommand(ButtonAddClicked);
+        }
+
+
+        // ---------- Buttons
+        public void ButtonClearClicked()
+        {
+            DisplayedSongPaths = null;
+        }
+
+        public void ButtonClearInvalidClicked()
+        {
+
+        }
+
+        public void ButtonCheckClicked()
+        {
+
+        }
+
+        public void ButtonAddClicked()
         {
 
         }
