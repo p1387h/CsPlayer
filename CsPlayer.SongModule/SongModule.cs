@@ -1,4 +1,8 @@
-﻿using Prism.Modularity;
+﻿using CsPlayer.Regions;
+using CsPlayer.SongModule.Views;
+using Microsoft.Practices.Unity;
+using Prism.Modularity;
+using Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +13,18 @@ namespace CsPlayer.SongModule
 {
     public class SongModule : IModule
     {
+        private IUnityContainer container;
+        private IRegionManager regionManager;
+
+        public SongModule(IUnityContainer container, IRegionManager regionManager)
+        {
+            if (container == null || regionManager == null)
+                throw new ArgumentException();
+
+            this.container = container;
+            this.regionManager = regionManager;
+        }
+
         public void Initialize()
         {
             this.InitializeServices();
@@ -17,12 +33,12 @@ namespace CsPlayer.SongModule
 
         private void InitializeServices()
         {
-            
+            this.container.RegisterType<object, SongCollection>(nameof(SongCollection));
         }
 
         private void InitializeViews()
         {
-            
+            this.regionManager.RegisterViewWithRegion(RegionNames.TabRegion, typeof(SongCollection));
         }
     }
 }
