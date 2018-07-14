@@ -90,6 +90,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Design\DesignSongCollectionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -105,6 +106,7 @@
     </Compile>
     <Compile Include="SongModule.cs" />
     <Compile Include="ViewModels\SongCollectionViewModel.cs" />
+    <Compile Include="ViewModels\SongViewModel.cs" />
     <Compile Include="Views\SongCollection.xaml.cs">
       <DependentUpon>SongCollection.xaml</DependentUpon>
     </Compile>
@@ -125,6 +127,10 @@
     <ProjectReference Include="..\CsPlayer.Regions\CsPlayer.Regions.csproj">
       <Project>{28928a72-ec5e-42a7-b92a-061c274aebaf}</Project>
       <Name>CsPlayer.Regions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CsPlayer.Shared\CsPlayer.Shared.csproj">
+      <Project>{69fea1fe-c9f6-4200-b1b4-60a331860448}</Project>
+      <Name>CsPlayer.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

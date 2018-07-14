@@ -8,42 +8,78 @@
              d:DesignHeight="450" d:DesignWidth="300"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
-             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:design="clr-namespace:CsPlayer.SongModule.Design"
+             d:DataContext="{d:DesignInstance design:DesignSongCollectionViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
-        <!-- Custom Button additions -->
-        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
-            <Setter Property="Margin" Value="5,2,5,2"></Setter>
-            <Setter Property="Padding" Value="5,2,5,2"></Setter>
-            <Setter Property="MinWidth" Value="100"></Setter>
-        </Style>
         <!-- Custom TextBox additions -->
         <Style TargetType="TextBox" BasedOn="{StaticResource MetroTextBox}">
             <Setter Property="Margin" Value="0,0,10,0"></Setter>
         </Style>
+        <!-- Custom Button style for top level buttons -->
+        <Style x:Key="ButtonTopStyle" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="Margin" Value="5,2,5,2"></Setter>
+            <Setter Property="Padding" Value="5,2,5,2"></Setter>
+            <Setter Property="MinWidth" Value="100"></Setter>
+        </Style>
+        <!-- Custom Button style for icons -->
+        <Style x:Key="ButtonIconStyle" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="MinWidth" Value="27"></Setter>
+            <Setter Property="MinHeight" Value="27"></Setter>
+            <Setter Property="Width" Value="27"></Setter>
+            <Setter Property="Height" Value="27"></Setter>
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
+        <!-- Song list template -->
+        <DataTemplate x:Key="SongDataTemplate">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" 
+                        Command="{Binding ButtonDelete}" 
+                        Style="{StaticResource ButtonIconStyle}">
+                    <iconPacks:Material Kind="Delete"></iconPacks:Material>
+                </Button>
+                <Button DockPanel.Dock="Right" 
+                        Command="{Binding ButtonCheck}" 
+                        Style="{StaticResource ButtonIconStyle}">
+                    <iconPacks:Material Kind="Settings"></iconPacks:Material>
+                </Button>
+                <Button DockPanel.Dock="Right" 
+                        Command="{Binding ButtonAdd}" 
+                        Style="{StaticResource ButtonIconStyle}">
+                    <iconPacks:Material Kind="Plus"></iconPacks:Material>
+                </Button>
+                <TextBlock DockPanel.Dock="Left" 
+                           Text="{Binding Name}"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"
+                           FontFamily="Verdana">
+                </TextBlock>
+            </DockPanel>
+        </DataTemplate>
     </UserControl.Resources>
     <DockPanel Background="White" Margin="10">
         <!-- Buttons -->
         <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Content="Clear" Command="{Binding ButtonClear}"></Button>
-            <Button Content="Clear Invalid" Command="{Binding ButtonClearInvalid}"></Button>
-            <Button Content="Check" Command="{Binding ButtonCheck}"></Button>
-            <Button Content="Add" Command="{Binding ButtonAdd}"></Button>
+            <Button Style="{StaticResource ButtonTopStyle}" Content="Clear" Command="{Binding ButtonClear}"></Button>
+            <Button Style="{StaticResource ButtonTopStyle}" Content="Clear Invalid" Command="{Binding ButtonClearInvalid}"></Button>
+            <Button Style="{StaticResource ButtonTopStyle}" Content="Check" Command="{Binding ButtonCheck}"></Button>
+            <Button Style="{StaticResource ButtonTopStyle}" Content="Add" Command="{Binding ButtonAdd}"></Button>
         </WrapPanel>
         <!-- Searchbar -->
         <DockPanel DockPanel.Dock="Bottom">
-            <Button DockPanel.Dock="Right" MinWidth="30" Width="35" Height="30" Margin="0,2,0,2">
+            <Button DockPanel.Dock="Right" Style="{StaticResource ButtonIconStyle}" Margin="0,2,0,2">
                 <iconPacks:Material Kind="Close"></iconPacks:Material>
             </Button>
             <TextBox DockPanel.Dock="Left" Height="12"></TextBox>
         </DockPanel>
         <!-- List of songs / Drop area -->
         <Grid Margin="0,10">
-            <ListView ItemsSource="{Binding DisplayedSongPaths}">
+            <ListView ItemsSource="{Binding DisplayedSongs}" ItemTemplate="{StaticResource SongDataTemplate}">
                 <ListView.Style>
                     <Style TargetType="ListView" BasedOn="{StaticResource MetroListView}">
                         <Setter Property="Visibility" Value="Visible"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding DisplayedSongPaths}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding DisplayedSongs}" Value="{x:Null}">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                             </DataTrigger>
                         </Style.Triggers>
@@ -55,7 +91,7 @@
                     <Style TargetType="Border">
                         <Setter Property="Visibility" Value="Hidden"></Setter>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding DisplayedSongPaths}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding DisplayedSongs}" Value="{x:Null}">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
                             </DataTrigger>
                         </Style.Triggers>

@@ -1,4 +1,5 @@
-﻿using Prism.Commands;
+﻿using CsPlayer.Shared;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,11 @@ namespace CsPlayer.SongModule.ViewModels
             private set { SetProperty<string>(ref _header, value); }
         }
 
-        private ObservableCollection<string> _displayedSongPaths;
-        public ObservableCollection<string> DisplayedSongPaths
+        private ObservableCollection<SongViewModel> _displayedSongs;
+        public ObservableCollection<SongViewModel> DisplayedSongs
         {
-            get { return _displayedSongPaths; }
-            set { SetProperty<ObservableCollection<string>>(ref _displayedSongPaths, value); }
+            get { return _displayedSongs; }
+            set { SetProperty<ObservableCollection<SongViewModel>>(ref _displayedSongs, value); }
         }
 
         public ICommand ButtonClear { get; private set; }
@@ -34,17 +35,17 @@ namespace CsPlayer.SongModule.ViewModels
 
         public SongCollectionViewModel()
         {
-            ButtonClear = new DelegateCommand(ButtonClearClicked);
-            ButtonClearInvalid = new DelegateCommand(ButtonClearInvalidClicked);
-            ButtonCheck = new DelegateCommand(ButtonCheckClicked);
-            ButtonAdd = new DelegateCommand(ButtonAddClicked);
+            ButtonClear = new DelegateCommand(this.ButtonClearClicked);
+            ButtonClearInvalid = new DelegateCommand(this.ButtonClearInvalidClicked);
+            ButtonCheck = new DelegateCommand(this.ButtonCheckClicked);
+            ButtonAdd = new DelegateCommand(this.ButtonAddClicked);
         }
 
 
         // ---------- Buttons
         public void ButtonClearClicked()
         {
-            DisplayedSongPaths = null;
+            DisplayedSongs = null;
         }
 
         public void ButtonClearInvalidClicked()
