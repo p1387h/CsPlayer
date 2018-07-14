@@ -36,7 +36,32 @@
             </Button>
             <TextBox DockPanel.Dock="Left" Height="12"></TextBox>
         </DockPanel>
-        <!-- List of songs -->
-        <ListView Margin="0,10" ItemsSource="{Binding DisplayedSongPaths}"></ListView>
+        <!-- List of songs / Drop area -->
+        <Grid Margin="0,10">
+            <ListView ItemsSource="{Binding DisplayedSongPaths}">
+                <ListView.Style>
+                    <Style TargetType="ListView" BasedOn="{StaticResource MetroListView}">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DisplayedSongPaths}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.Style>
+            </ListView>
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="Drop files">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DisplayedSongPaths}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
     </DockPanel>
 </UserControl>
