@@ -5,10 +5,30 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CsPlayer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="CsPlayer" Height="450" Width="800"
         xmlns:prism="http://prismlibrary.com/"
-        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls">
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:regions="clr-namespace:CsPlayer.Regions;assembly=CsPlayer.Regions">
+    <Controls:MetroWindow.Resources>
+        <Style TargetType="Controls:MetroTabItem" BasedOn="{StaticResource MetroTabItem}">
+            <Setter 
+                Property="Header" 
+                Value="{Binding DataContext.Header}">
+            </Setter>
+        </Style>
+    </Controls:MetroWindow.Resources>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" MinWidth="200"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Controls:MetroAnimatedSingleRowTabControl
+            Grid.Column="0" 
+            prism:RegionManager.RegionName="{Binding Source={x:Static regions:RegionNames.TabRegion}}">
+        </Controls:MetroAnimatedSingleRowTabControl>
+        <UserControl 
+            Grid.Column="1" 
+            prism:RegionManager.RegionName="{Binding Source={x:Static regions:RegionNames.MainRegion}}">
+        </UserControl>
     </Grid>
 </Controls:MetroWindow>
