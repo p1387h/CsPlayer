@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsPlayer", "CsPlayer\CsPlay
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsPlayer.Regions", "CsPlayer.Regions\CsPlayer.Regions.csproj", "{28928A72-EC5E-42A7-B92A-061C274AEBAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsPlayer.SongModule", "CsPlayer.SongModule\CsPlayer.SongModule.csproj", "{07A9D639-DDF0-47BE-BAAA-02544D47D27B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{28928A72-EC5E-42A7-B92A-061C274AEBAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28928A72-EC5E-42A7-B92A-061C274AEBAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28928A72-EC5E-42A7-B92A-061C274AEBAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07A9D639-DDF0-47BE-BAAA-02544D47D27B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07A9D639-DDF0-47BE-BAAA-02544D47D27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A9D639-DDF0-47BE-BAAA-02544D47D27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07A9D639-DDF0-47BE-BAAA-02544D47D27B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
