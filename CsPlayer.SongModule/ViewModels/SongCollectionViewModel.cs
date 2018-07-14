@@ -28,22 +28,26 @@ namespace CsPlayer.SongModule.ViewModels
             set { SetProperty<ObservableCollection<SongViewModel>>(ref _displayedSongs, value); }
         }
 
-        public ICommand ButtonClear { get; private set; }
+        public ICommand ButtonClearAll { get; private set; }
         public ICommand ButtonClearInvalid { get; private set; }
-        public ICommand ButtonCheck { get; private set; }
-        public ICommand ButtonAdd { get; private set; }
+        public ICommand ButtonCheckAll { get; private set; }
+        public ICommand ButtonAddAll { get; private set; }
+        public ICommand ButtonLoad { get; private set; }
 
         public SongCollectionViewModel()
         {
-            ButtonClear = new DelegateCommand(this.ButtonClearClicked);
+            ButtonClearAll = new DelegateCommand(this.ButtonClearAllClicked);
             ButtonClearInvalid = new DelegateCommand(this.ButtonClearInvalidClicked);
-            ButtonCheck = new DelegateCommand(this.ButtonCheckClicked);
-            ButtonAdd = new DelegateCommand(this.ButtonAddClicked);
+            ButtonCheckAll = new DelegateCommand(this.ButtonCheckAllClicked);
+            ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
+            ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
+
+            DisplayedSongs = new ObservableCollection<SongViewModel>();
         }
 
 
         // ---------- Buttons
-        public void ButtonClearClicked()
+        public void ButtonClearAllClicked()
         {
             DisplayedSongs = null;
         }
@@ -53,12 +57,17 @@ namespace CsPlayer.SongModule.ViewModels
 
         }
 
-        public void ButtonCheckClicked()
+        public void ButtonCheckAllClicked()
         {
 
         }
 
-        public void ButtonAddClicked()
+        public void ButtonAddAllClicked()
+        {
+
+        }
+
+        public void ButtonLoadClicked()
         {
 
         }
