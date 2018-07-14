@@ -10,6 +10,7 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:regions="clr-namespace:CsPlayer.Regions;assembly=CsPlayer.Regions">
     <Controls:MetroWindow.Resources>
+        <!-- Header for TabControl items -->
         <Style TargetType="Controls:MetroTabItem" BasedOn="{StaticResource MetroTabItem}">
             <Setter 
                 Property="Header" 
@@ -19,8 +20,8 @@
     </Controls:MetroWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" MinWidth="200"></ColumnDefinition>
-            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="2*" MinWidth="300"></ColumnDefinition>
+            <ColumnDefinition Width="3*" MinWidth="500"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Controls:MetroAnimatedSingleRowTabControl
             Grid.Column="0" 

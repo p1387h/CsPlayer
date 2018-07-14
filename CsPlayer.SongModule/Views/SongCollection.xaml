@@ -5,10 +5,38 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CsPlayer.SongModule.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="200"
+             d:DesignHeight="450" d:DesignWidth="300"
              xmlns:prism="http://prismlibrary.com/"
-             prism:ViewModelLocator.AutoWireViewModel="True">
-    <Grid>
-            
-    </Grid>
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks">
+    <UserControl.Resources>
+        <!-- Custom Button additions -->
+        <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="Margin" Value="5,2,5,2"></Setter>
+            <Setter Property="Padding" Value="5,2,5,2"></Setter>
+            <Setter Property="MinWidth" Value="100"></Setter>
+        </Style>
+        <!-- Custom TextBox additions -->
+        <Style TargetType="TextBox" BasedOn="{StaticResource MetroTextBox}">
+            <Setter Property="Margin" Value="0,0,10,0"></Setter>
+        </Style>
+    </UserControl.Resources>
+    <DockPanel Background="White" Margin="10">
+        <!-- Buttons -->
+        <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Clear"></Button>
+            <Button Content="Clear Invalid"></Button>
+            <Button Content="Check"></Button>
+            <Button Content="Add"></Button>
+        </WrapPanel>
+        <!-- Searchbar -->
+        <DockPanel DockPanel.Dock="Bottom">
+            <Button DockPanel.Dock="Right" MinWidth="30" Width="35" Height="30" Margin="0,2,5,2">
+                <iconPacks:Material Kind="Close"></iconPacks:Material>
+            </Button>
+            <TextBox DockPanel.Dock="Left" Height="12"></TextBox>
+        </DockPanel>
+        <!-- List of songs -->
+        <ListView Margin="0,10" ItemsSource="{Binding DisplayedSongPaths}"></ListView>
+    </DockPanel>
 </UserControl>
