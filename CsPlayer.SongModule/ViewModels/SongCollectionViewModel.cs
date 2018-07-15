@@ -1,6 +1,8 @@
-﻿using CsPlayer.Shared;
+﻿using CsPlayer.PlayerEvents;
+using CsPlayer.Shared;
 using Microsoft.Win32;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -35,15 +37,27 @@ namespace CsPlayer.SongModule.ViewModels
         public ICommand ButtonAddAll { get; private set; }
         public ICommand ButtonLoad { get; private set; }
 
-        public SongCollectionViewModel()
+        private IEventAggregator eventAggregator;
+
+        public SongCollectionViewModel(IEventAggregator eventAggregator)
         {
+            this.eventAggregator = eventAggregator;
+
             ButtonClearAll = new DelegateCommand(this.ButtonClearAllClicked);
             ButtonClearInvalid = new DelegateCommand(this.ButtonClearInvalidClicked);
             ButtonCheckAll = new DelegateCommand(this.ButtonCheckAllClicked);
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
+
+            this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>().Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
         }
 
+        private void RemoveSongFromSongList(Song song)
+        {
+            var toRemove = this.DisplayedSongs.FirstOrDefault(x => x.FilePath.Equals(song.FilePath));
+
+            DisplayedSongs.Remove(toRemove);
+        }
 
         // ---------- Buttons
         public void ButtonClearAllClicked()
@@ -53,17 +67,18 @@ namespace CsPlayer.SongModule.ViewModels
 
         public void ButtonClearInvalidClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         public void ButtonCheckAllClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         public void ButtonAddAllClicked()
         {
-
+            this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
+                .Publish(this.DisplayedSongs.Select(x => x.song).ToList());
         }
 
         public void ButtonLoadClicked()
@@ -77,7 +92,9 @@ namespace CsPlayer.SongModule.ViewModels
             if (fileDialog.ShowDialog() ?? false)
             {
                 var files = fileDialog.FileNames;
-                var songViewModels = files.Select(x => new Song(x)).Select(x => new SongViewModel(x));
+                var songViewModels = files
+                    .Select(x => new Song(x))
+                    .Select(x => new SongViewModel(x, this.eventAggregator));
                 DisplayedSongs = new ObservableCollection<SongViewModel>();
 
                 foreach (var viewModel in songViewModels)

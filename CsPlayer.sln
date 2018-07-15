@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsPlayer.Shared", "CsPlayer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsPlayer.PlayerModule", "CsPlayer.PlayerModule\CsPlayer.PlayerModule.csproj", "{CE1691B5-B366-4C2D-8BC5-5937BB967848}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsPlayer.PlayerEvents", "CsPlayer.PlayerEvents\CsPlayer.PlayerEvents.csproj", "{A9D5A3BD-01C4-4151-9181-12D81D227567}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CE1691B5-B366-4C2D-8BC5-5937BB967848}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE1691B5-B366-4C2D-8BC5-5937BB967848}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE1691B5-B366-4C2D-8BC5-5937BB967848}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9D5A3BD-01C4-4151-9181-12D81D227567}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9D5A3BD-01C4-4151-9181-12D81D227567}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9D5A3BD-01C4-4151-9181-12D81D227567}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9D5A3BD-01C4-4151-9181-12D81D227567}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

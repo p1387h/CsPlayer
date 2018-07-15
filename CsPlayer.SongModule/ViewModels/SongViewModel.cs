@@ -1,5 +1,7 @@
-﻿using CsPlayer.Shared;
+﻿using CsPlayer.PlayerEvents;
+using CsPlayer.Shared;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -36,11 +38,13 @@ namespace CsPlayer.SongModule.ViewModels
         public ICommand ButtonCheck { get; private set; }
         public ICommand ButtonDelete { get; private set; }
 
-        private Song song;
+        internal Song song;
+        private IEventAggregator eventAggregator;
 
-        public SongViewModel(Song song)
+        public SongViewModel(Song song, IEventAggregator eventAggregator)
         {
             this.song = song;
+            this.eventAggregator = eventAggregator;
 
             ButtonAdd = new DelegateCommand(this.ButtonAddClicked);
             ButtonCheck = new DelegateCommand(this.ButtonCheckClicked);
@@ -51,17 +55,19 @@ namespace CsPlayer.SongModule.ViewModels
         // ---------- Buttons
         public void ButtonAddClicked()
         {
-
+            this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
+                .Publish(new List<Song>() { this.song });
         }
 
         public void ButtonCheckClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         public void ButtonDeleteClicked()
         {
-
+            this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
+                .Publish(this.song);
         }
     }
 }

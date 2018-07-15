@@ -1,5 +1,7 @@
-﻿using CsPlayer.Shared;
+﻿using CsPlayer.PlayerEvents;
+using CsPlayer.Shared;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -26,46 +28,61 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonNext { get; private set; }
         public ICommand ButtonSaveChanges { get; private set; }
 
-        public PlayerViewModel()
+        private IEventAggregator eventAggregator;
+
+        public PlayerViewModel(IEventAggregator eventAggregator)
         {
+            this.eventAggregator = eventAggregator;
+
             ButtonPrevious = new DelegateCommand(this.ButtonPreviousClicked);
             ButtonPlay = new DelegateCommand(this.ButtonPlayClicked);
             ButtonPause = new DelegateCommand(this.ButtonPauseClicked);
             ButtonStop = new DelegateCommand(this.ButtonStopClicked);
             ButtonNext = new DelegateCommand(this.ButtonNextClicked);
             ButtonSaveChanges = new DelegateCommand(this.ButtonSaveChangesClicked);
+
+            this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
+                .Subscribe(this.AddSongsToPlaylist, ThreadOption.UIThread);
+        }
+
+        private void AddSongsToPlaylist(List<Song> songs)
+        {
+            foreach (var song in songs)
+            {
+                Playlist.Songs.Add(new SongViewModel(song));
+            }
         }
 
 
         // ---------- Buttons
         private void ButtonPreviousClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         private void ButtonPlayClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         private void ButtonPauseClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         private void ButtonStopClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         private void ButtonNextClicked()
         {
-
+            throw new NotImplementedException();
         }
 
         private void ButtonSaveChangesClicked()
         {
-
+            throw new NotImplementedException();
         }
     }
 }

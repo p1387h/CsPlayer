@@ -124,6 +124,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CsPlayer.PlayerEvents\CsPlayer.PlayerEvents.csproj">
+      <Project>{a9d5a3bd-01c4-4151-9181-12d81d227567}</Project>
+      <Name>CsPlayer.PlayerEvents</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CsPlayer.Regions\CsPlayer.Regions.csproj">
       <Project>{28928a72-ec5e-42a7-b92a-061c274aebaf}</Project>
       <Name>CsPlayer.Regions</Name>
