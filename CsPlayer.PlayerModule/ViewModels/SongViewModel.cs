@@ -1,10 +1,13 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
+using NAudio.Wave;
 using Prism.Commands;
 using Prism.Events;
+using Prism.Logging;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,17 +41,44 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonDown { get; private set; }
         public ICommand ButtonDelete { get; private set; }
 
+        public Mp3FileReader Mp3Reader { get; private set; }
+
+        private TimeSpan _totalTime;
+        public TimeSpan TotalTime
+        {
+            get { return _totalTime; }
+            set { SetProperty<TimeSpan>(ref _totalTime, value); }
+        }
+
         internal Song song;
         private IEventAggregator eventAggregator;
+        private ILoggerFacade logger;
 
-        public SongViewModel(Song song, IEventAggregator eventAggregator)
+        public SongViewModel(Song song, IEventAggregator eventAggregator, ILoggerFacade logger)
         {
             this.song = song;
             this.eventAggregator = eventAggregator;
+            this.logger = logger;
 
             ButtonUp = new DelegateCommand(this.ButtonUpClicked);
             ButtonDown = new DelegateCommand(this.ButtonDownClicked);
             ButtonDelete = new DelegateCommand(this.ButtonDeleteClicked);
+
+            try
+            {
+                // Prevent exceptions by testing the existence of the file itself.
+                if (this.song.Valid)
+                {
+                    Mp3Reader = new Mp3FileReader(this.song.FilePath);
+                    TotalTime = Mp3Reader.TotalTime;
+                }
+            } catch(DirectoryNotFoundException e)
+            {
+                this.logger.Log(e.Message, Category.Exception, Priority.High);
+            } catch(FileNotFoundException e)
+            {
+                this.logger.Log(e.Message, Category.Exception, Priority.High);
+            }
         }
 
         

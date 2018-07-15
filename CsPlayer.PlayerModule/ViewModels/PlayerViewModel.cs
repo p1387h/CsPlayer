@@ -2,6 +2,7 @@
 using CsPlayer.Shared;
 using Prism.Commands;
 using Prism.Events;
+using Prism.Logging;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -29,11 +30,14 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonSaveChanges { get; private set; }
 
         private IEventAggregator eventAggregator;
+        private ILoggerFacade logger;
 
-        public PlayerViewModel(IEventAggregator eventAggregator)
+        public PlayerViewModel(IEventAggregator eventAggregator, ILoggerFacade logger)
         {
             this.eventAggregator = eventAggregator;
-            Playlist = new PlaylistViewModel(new Playlist("Empty Name"), eventAggregator);
+            this.logger = logger;
+
+            Playlist = new PlaylistViewModel(new Playlist("Empty Name"), eventAggregator, logger);
 
             ButtonPrevious = new DelegateCommand(this.ButtonPreviousClicked);
             ButtonPlay = new DelegateCommand(this.ButtonPlayClicked);
@@ -54,7 +58,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         {
             foreach (var song in songs)
             {
-                Playlist.Songs.Add(new SongViewModel(song, this.eventAggregator));
+                Playlist.Songs.Add(new SongViewModel(song, this.eventAggregator, this.logger));
             }
         }
 

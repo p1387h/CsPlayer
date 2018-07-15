@@ -1,5 +1,6 @@
 ﻿using CsPlayer.Shared;
 using Prism.Events;
+using Prism.Logging;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -33,20 +34,36 @@ namespace CsPlayer.PlayerModule.ViewModels
             }
         }
 
+        private TimeSpan _totalTime = new TimeSpan();
+        public TimeSpan TotalTime
+        {
+            get { return _totalTime; }
+            set { SetProperty<TimeSpan>(ref _totalTime, value); }
+        }
+
+        public int SongCount
+        {
+            get { return Songs.Count; }
+        }
+
         public ObservableCollection<SongViewModel> Songs { get; private set; }
 
         private Playlist playlist;
         private IEventAggregator eventAggregator;
+        private ILoggerFacade logger;
 
-        public PlaylistViewModel(Playlist playlist, IEventAggregator eventAggregator)
+        public PlaylistViewModel(Playlist playlist, IEventAggregator eventAggregator, ILoggerFacade logger)
         {
             this.playlist = playlist;
             this.eventAggregator = eventAggregator;
+            this.logger = logger;
 
             // Wrap the references in view model ones.
             Songs = new ObservableCollection<SongViewModel>();
-            Songs.AddRange(playlist.Songs.Select(x => new SongViewModel(x, this.eventAggregator)));
+            Songs.AddRange(playlist.Songs.Select(x => new SongViewModel(x, this.eventAggregator, this.logger)));
             Songs.CollectionChanged += this.SongCollectionChanged;
+
+            this.UpdatePlaylistInfo();
         }
 
         private void SongCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -68,6 +85,23 @@ namespace CsPlayer.PlayerModule.ViewModels
                 case NotifyCollectionChangedAction.Reset:
                     this.playlist.Songs.Clear();
                     break;
+            }
+
+            this.UpdatePlaylistInfo();
+            this.RaisePropertyChanged(nameof(SongCount));
+        }
+
+        private void UpdatePlaylistInfo()
+        {
+            if (Songs.Any())
+            {
+                TotalTime = Songs
+                    .Select(x => x.TotalTime)
+                    .Aggregate((total, x) => total.Add(x));
+            }
+            else
+            {
+                TotalTime = new TimeSpan();
             }
         }
     }
