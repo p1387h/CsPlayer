@@ -34,7 +34,7 @@ namespace CsPlayer.SongModule.ViewModels
             }
         }
 
-        public Song Song { get; set; }
+        internal Song Song { get; set; }
 
         public ICommand ButtonAdd { get; private set; }
         public ICommand ButtonCheck { get; private set; }

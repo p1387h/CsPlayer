@@ -1,4 +1,5 @@
 ﻿using CsPlayer.Shared;
+using Microsoft.Practices.ServiceLocation;
 using Prism.Events;
 using Prism.Logging;
 using Prism.Mvvm;
@@ -16,20 +17,20 @@ namespace CsPlayer.PlayerModule.ViewModels
     {
         public string Name
         {
-            get { return this.playlist.Name; }
+            get { return Playlist.Name; }
             private set
             {
-                this.playlist.Name = value;
+                Playlist.Name = value;
                 this.RaisePropertyChanged(nameof(Name));
             }
         }
 
         public bool Valid
         {
-            get { return this.playlist.Valid; }
+            get { return Playlist.Valid; }
             private set
             {
-                this.playlist.Valid = value;
+                Playlist.Valid = value;
                 this.RaisePropertyChanged(nameof(Valid));
             }
         }
@@ -41,6 +42,28 @@ namespace CsPlayer.PlayerModule.ViewModels
             set { SetProperty<TimeSpan>(ref _totalTime, value); }
         }
 
+        private Playlist _playlist;
+        internal Playlist Playlist
+        {
+            get { return _playlist; }
+            set
+            {
+                _playlist = value;
+
+                // Wrap the references in view model ones.
+                Songs = new ObservableCollection<SongViewModel>();
+                Songs.AddRange(_playlist.Songs.Select(x =>
+                    {
+                        var viewModel = ServiceLocator.Current.GetInstance<SongViewModel>();
+                        viewModel.Song = x;
+                        return viewModel;
+                    }));
+                Songs.CollectionChanged += this.SongCollectionChanged;
+
+                this.UpdatePlaylistInfo();
+            }
+        }
+
         public int SongCount
         {
             get { return Songs.Count; }
@@ -48,22 +71,11 @@ namespace CsPlayer.PlayerModule.ViewModels
 
         public ObservableCollection<SongViewModel> Songs { get; private set; }
 
-        private Playlist playlist;
         private IEventAggregator eventAggregator;
-        private ILoggerFacade logger;
 
-        public PlaylistViewModel(Playlist playlist, IEventAggregator eventAggregator, ILoggerFacade logger)
+        public PlaylistViewModel(IEventAggregator eventAggregator)
         {
-            this.playlist = playlist;
             this.eventAggregator = eventAggregator;
-            this.logger = logger;
-
-            // Wrap the references in view model ones.
-            Songs = new ObservableCollection<SongViewModel>();
-            Songs.AddRange(playlist.Songs.Select(x => new SongViewModel(x, this.eventAggregator, this.logger)));
-            Songs.CollectionChanged += this.SongCollectionChanged;
-
-            this.UpdatePlaylistInfo();
         }
 
         private void SongCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -71,19 +83,19 @@ namespace CsPlayer.PlayerModule.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    this.playlist.Songs.AddRange(e.NewItems.OfType<Song>());
+                    Playlist.Songs.AddRange(e.NewItems.OfType<Song>());
                     break;
                 case NotifyCollectionChangedAction.Move:
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     var removedFilePaths = e.OldItems.OfType<Song>().Select(x => x.FilePath);
 
-                    this.playlist.Songs.RemoveAll(x => removedFilePaths.Contains(x.FilePath));
+                    Playlist.Songs.RemoveAll(x => removedFilePaths.Contains(x.FilePath));
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     break;
                 case NotifyCollectionChangedAction.Reset:
-                    this.playlist.Songs.Clear();
+                    Playlist.Songs.Clear();
                     break;
             }
 

@@ -19,20 +19,20 @@ namespace CsPlayer.PlayerModule.ViewModels
     {
         public string Name
         {
-            get { return this.song.Name; }
+            get { return Song.Name; }
         }
 
         public string FilePath
         {
-            get { return this.song.FilePath; }
+            get { return Song.FilePath; }
         }
 
         public bool Valid
         {
-            get { return this.song.Valid; }
+            get { return Song.Valid; }
             private set
             {
-                this.song.Valid = value;
+                Song.Valid = value;
                 this.RaisePropertyChanged(nameof(Valid));
             }
         }
@@ -50,38 +50,48 @@ namespace CsPlayer.PlayerModule.ViewModels
             set { SetProperty<TimeSpan>(ref _totalTime, value); }
         }
 
-        internal Song song;
+        private Song _song;
+        internal Song Song
+        {
+            get { return _song; }
+            set
+            {
+                _song = value;
+
+                try
+                {
+                    // Prevent exceptions by testing the existence of the file itself.
+                    if (_song != null && _song.Valid)
+                    {
+                        Mp3Reader = new Mp3FileReader(_song.FilePath);
+                        TotalTime = Mp3Reader.TotalTime;
+                    }
+                }
+                catch (DirectoryNotFoundException e)
+                {
+                    this.logger.Log(e.Message, Category.Exception, Priority.High);
+                }
+                catch (FileNotFoundException e)
+                {
+                    this.logger.Log(e.Message, Category.Exception, Priority.High);
+                }
+            }
+        }
+
         private IEventAggregator eventAggregator;
         private ILoggerFacade logger;
 
-        public SongViewModel(Song song, IEventAggregator eventAggregator, ILoggerFacade logger)
+        public SongViewModel(IEventAggregator eventAggregator, ILoggerFacade logger)
         {
-            this.song = song;
             this.eventAggregator = eventAggregator;
             this.logger = logger;
 
             ButtonUp = new DelegateCommand(this.ButtonUpClicked);
             ButtonDown = new DelegateCommand(this.ButtonDownClicked);
             ButtonDelete = new DelegateCommand(this.ButtonDeleteClicked);
-
-            try
-            {
-                // Prevent exceptions by testing the existence of the file itself.
-                if (this.song.Valid)
-                {
-                    Mp3Reader = new Mp3FileReader(this.song.FilePath);
-                    TotalTime = Mp3Reader.TotalTime;
-                }
-            } catch(DirectoryNotFoundException e)
-            {
-                this.logger.Log(e.Message, Category.Exception, Priority.High);
-            } catch(FileNotFoundException e)
-            {
-                this.logger.Log(e.Message, Category.Exception, Priority.High);
-            }
         }
 
-        
+
         // ---------- Buttons
         public void ButtonUpClicked()
         {
@@ -96,7 +106,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         public void ButtonDeleteClicked()
         {
             this.eventAggregator.GetEvent<RemoveSongFromPlaylistEvent>()
-                .Publish(this.song);
+                .Publish(Song);
         }
     }
 }
