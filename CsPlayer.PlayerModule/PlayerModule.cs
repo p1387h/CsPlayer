@@ -1,4 +1,6 @@
-﻿using Microsoft.Practices.Unity;
+﻿using CsPlayer.PlayerModule.Views;
+using CsPlayer.Regions;
+using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Prism.Regions;
 using System;
@@ -31,12 +33,12 @@ namespace CsPlayer.PlayerModule
 
         private void InitializeServices()
         {
-            
+            this.container.RegisterType<object, Player>(nameof(Player));
         }
 
         private void InitializeViews()
         {
-            
+            this.regionManager.RegisterViewWithRegion(RegionNames.MainRegion, typeof(Player));
         }
     }
 }
