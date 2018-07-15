@@ -30,7 +30,7 @@
                 <DockPanel>
                     <DockPanel.Style>
                         <Style TargetType="DockPanel">
-                            <Setter Property="Background" Value="white"></Setter>
+                            <Setter Property="Background" Value="Transparent"></Setter>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Valid}" Value="False">
                                     <Setter Property="Background" Value="#ff8080"></Setter>
