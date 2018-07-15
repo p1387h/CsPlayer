@@ -93,6 +93,8 @@
     <Compile Include="Design\DesignPlayerViewModel.cs" />
     <Compile Include="PlayerModule.cs" />
     <Compile Include="ViewModels\PlayerViewModel.cs" />
+    <Compile Include="ViewModels\PlaylistViewModel.cs" />
+    <Compile Include="ViewModels\SongViewModel.cs" />
     <Compile Include="Views\Player.xaml.cs">
       <DependentUpon>Player.xaml</DependentUpon>
     </Compile>

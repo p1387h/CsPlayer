@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace CsPlayer.SongModule.ViewModels
+namespace CsPlayer.PlayerModule.ViewModels
 {
     class SongViewModel : BindableBase
     {
@@ -32,36 +32,11 @@ namespace CsPlayer.SongModule.ViewModels
             }
         }
 
-        public ICommand ButtonAdd { get; private set; }
-        public ICommand ButtonCheck { get; private set; }
-        public ICommand ButtonDelete { get; private set; }
-
         private Song song;
 
         public SongViewModel(Song song)
         {
             this.song = song;
-
-            ButtonAdd = new DelegateCommand(this.ButtonAddClicked);
-            ButtonCheck = new DelegateCommand(this.ButtonCheckClicked);
-            ButtonDelete = new DelegateCommand(this.ButtonDeleteClicked);
-        }
-
-
-        // ---------- Buttons
-        public void ButtonAddClicked()
-        {
-
-        }
-
-        public void ButtonCheckClicked()
-        {
-
-        }
-
-        public void ButtonDeleteClicked()
-        {
-
         }
     }
 }
