@@ -8,9 +8,107 @@
              d:DesignHeight="450" d:DesignWidth="500"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:design="clr-namespace:CsPlayer.PlayerModule.Design"
              d:DataContext="{d:DesignInstance design:DesignPlayerViewModel, IsDesignTimeCreatable=True}">
-    <Grid Background="White">
-        <TextBlock FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center">PLAYER</TextBlock>
-    </Grid>
+    <UserControl.Resources>
+        <!-- Custom TextBlock additions -->
+        <Style x:Key="TextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource MetroTextBlock}">
+            <Setter Property="FontFamily" Value="Verdana"></Setter>
+        </Style>
+        <!-- Custom Button style for icons -->
+        <Style x:Key="ButtonIconStyle" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Setter Property="MinWidth" Value="27"></Setter>
+            <Setter Property="MinHeight" Value="27"></Setter>
+            <Setter Property="Width" Value="27"></Setter>
+            <Setter Property="Height" Value="27"></Setter>
+            <Setter Property="Margin" Value="2"></Setter>
+        </Style>
+        <!-- Song list template -->
+        <DataTemplate x:Key="SongDataTemplate">
+            <Border BorderBrush="Black" BorderThickness="2" Margin="0,2">
+                <DockPanel>
+                    <DockPanel.Style>
+                        <Style TargetType="DockPanel">
+                            <Setter Property="Background" Value="white"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Valid}" Value="False">
+                                    <Setter Property="Background" Value="#ff8080"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DockPanel.Style>
+                    <!-- Arrows left -->
+                    <UniformGrid DockPanel.Dock="Left" Rows="2" Columns="1">
+                        <Button Style="{StaticResource ButtonIconStyle}" Background="Transparent" BorderThickness="0">
+                            <iconPacks:Material Kind="ArrowUpBold"></iconPacks:Material>
+                        </Button>
+                        <Button Style="{StaticResource ButtonIconStyle}" Background="Transparent" BorderThickness="0">
+                            <iconPacks:Material Kind="ArrowDownBold"></iconPacks:Material>
+                        </Button>
+                    </UniformGrid>
+                    <!-- Delete button and time right -->
+                    <Grid DockPanel.Dock="Right">
+                        <TextBlock Text="XX:XX:XX" VerticalAlignment="Center" Margin="20,0,40,0"></TextBlock>
+                        <Button Style="{StaticResource ButtonIconStyle}" 
+                                VerticalAlignment="Top" 
+                                HorizontalAlignment="Right">
+                            <iconPacks:Material Kind="Delete"></iconPacks:Material>
+                        </Button>
+                    </Grid>
+                    <!-- Index of song -->
+                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">N.</TextBlock>
+                    <!-- Name of song / current playtime -->
+                    <TextBlock DockPanel.Dock="Left" 
+                               VerticalAlignment="Center" 
+                               Text="{Binding Name}" 
+                               Margin="20,0,0,0"
+                               TextWrapping="Wrap">
+                    </TextBlock>
+                </DockPanel>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+    <DockPanel Background="White" Margin="10">
+        <!-- Header information -->
+        <DockPanel DockPanel.Dock="Top">
+            <TextBlock Margin="30,0,10,0" DockPanel.Dock="Left">X/N</TextBlock>
+            <TextBlock Margin="20,0,40,0" DockPanel.Dock="Right">XX:XX:XX</TextBlock>
+            <TextBlock Margin="20,0" TextWrapping="Wrap" Text="{Binding Playlist.Name}"></TextBlock>
+        </DockPanel>
+        <!-- Player bottom buttons -->
+        <DockPanel DockPanel.Dock="Bottom">
+            <Button DockPanel.Dock="Right" Content="Save Changes" Command="{Binding SaveChanges}"></Button>
+            <WrapPanel DockPanel.Dock="Left" HorizontalAlignment="Center">
+                <WrapPanel.Resources>
+                    <Style TargetType="Button" BasedOn="{StaticResource ButtonIconStyle}">
+                        <Setter Property="Margin" Value="5,2,5,2"></Setter>
+                    </Style>
+                </WrapPanel.Resources>
+                <Button Command="{Binding ButtonPrevious}">
+                    <iconPacks:Material Kind="SkipPrevious"></iconPacks:Material>
+                </Button>
+                <Button Command="{Binding ButtonPlay}">
+                    <iconPacks:Material Kind="Play"></iconPacks:Material>
+                </Button>
+                <Button Command="{Binding ButtonPause}">
+                    <iconPacks:Material Kind="Pause"></iconPacks:Material>
+                </Button>
+                <Button Command="{Binding ButtonStop}">
+                    <iconPacks:Material Kind="Stop"></iconPacks:Material>
+                </Button>
+                <Button Command="{Binding ButtonNext}">
+                    <iconPacks:Material Kind="SkipNext"></iconPacks:Material>
+                </Button>
+            </WrapPanel>
+        </DockPanel>
+        <!-- Player center -->
+        <Grid Margin="0,10">
+            <ListView x:Name="SongList" 
+                      ItemsSource="{Binding Playlist.Songs}" 
+                      ItemTemplate="{StaticResource SongDataTemplate}"
+                      ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            </ListView>
+        </Grid>
+    </DockPanel>
 </UserControl>
