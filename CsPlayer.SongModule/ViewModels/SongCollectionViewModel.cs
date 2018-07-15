@@ -99,7 +99,12 @@ namespace CsPlayer.SongModule.ViewModels
                 var songViewModels = files
                     .Select(x => new Song(x))
                     .Select(x => new SongViewModel(x, this.eventAggregator));
-                DisplayedSongs = new ObservableCollection<SongViewModel>();
+
+                // Do not overwrite any existing / already loaded instances.
+                if(songViewModels.Any() && DisplayedSongs == null)
+                {
+                    DisplayedSongs = new ObservableCollection<SongViewModel>();
+                }
 
                 foreach (var viewModel in songViewModels)
                 {
