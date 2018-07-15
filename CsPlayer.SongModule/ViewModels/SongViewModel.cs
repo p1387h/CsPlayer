@@ -25,10 +25,12 @@ namespace CsPlayer.SongModule.ViewModels
         private bool _valid;
         public bool Valid
         {
-            get { return _valid; }
-            private set {
+            get { return this.song.Valid; }
+            private set
+            {
                 SetProperty<bool>(ref _valid, value);
-                this.song.Valid = value; }
+                this.song.Valid = value;
+            }
         }
 
         public ICommand ButtonAdd { get; private set; }

@@ -41,8 +41,6 @@ namespace CsPlayer.SongModule.ViewModels
             ButtonCheckAll = new DelegateCommand(this.ButtonCheckAllClicked);
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
-
-            DisplayedSongs = new ObservableCollection<SongViewModel>();
         }
 
 

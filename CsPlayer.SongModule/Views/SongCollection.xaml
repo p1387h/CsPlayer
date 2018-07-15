@@ -33,6 +33,16 @@
         <!-- Song list template -->
         <DataTemplate x:Key="SongDataTemplate">
             <DockPanel>
+                <DockPanel.Style>
+                    <Style TargetType="DockPanel">
+                        <Setter Property="Background" Value="Transparent"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Valid}" Value="False">
+                                <Setter Property="Background" Value="#ff8080"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DockPanel.Style>
                 <Button DockPanel.Dock="Right" 
                         Command="{Binding ButtonDelete}" 
                         Style="{StaticResource ButtonIconStyle}">
