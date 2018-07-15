@@ -1,4 +1,5 @@
 ﻿using CsPlayer.Shared;
+using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -67,7 +68,23 @@ namespace CsPlayer.SongModule.ViewModels
 
         public void ButtonLoadClicked()
         {
+            var fileDialog = new OpenFileDialog()
+            {
+                Multiselect = true,
+                Filter = "MP3 files |*.mp3"
+            };
 
+            if (fileDialog.ShowDialog() ?? false)
+            {
+                var files = fileDialog.FileNames;
+                var songViewModels = files.Select(x => new Song(x)).Select(x => new SongViewModel(x));
+                DisplayedSongs = new ObservableCollection<SongViewModel>();
+
+                foreach (var viewModel in songViewModels)
+                {
+                    DisplayedSongs.Add(viewModel);
+                }
+            }
         }
     }
 }
