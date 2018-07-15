@@ -1,0 +1,42 @@
+﻿using Microsoft.Practices.Unity;
+using Prism.Modularity;
+using Prism.Regions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CsPlayer.PlayerModule
+{
+    public class PlayerModule : IModule
+    {
+        private IUnityContainer container;
+        private IRegionManager regionManager;
+
+        public PlayerModule(IUnityContainer container, IRegionManager regionManager)
+        {
+            if (container == null || regionManager == null)
+                throw new ArgumentException();
+
+            this.container = container;
+            this.regionManager = regionManager;
+        }
+
+        public void Initialize()
+        {
+            this.InitializeServices();
+            this.InitializeViews();
+        }
+
+        private void InitializeServices()
+        {
+            
+        }
+
+        private void InitializeViews()
+        {
+            
+        }
+    }
+}

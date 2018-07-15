@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{07A9D639-DDF0-47BE-BAAA-02544D47D27B}</ProjectGuid>
+    <ProjectGuid>{CE1691B5-B366-4C2D-8BC5-5937BB967848}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>CsPlayer.SongModule</RootNamespace>
-    <AssemblyName>CsPlayer.SongModule</AssemblyName>
+    <RootNamespace>CsPlayer.PlayerModule</RootNamespace>
+    <AssemblyName>CsPlayer.PlayerModule</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -70,7 +70,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\Prism.Wpf.6.3.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -87,10 +87,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Design\DesignSongCollectionViewModel.cs" />
+    <Compile Include="PlayerModule.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -103,12 +102,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <Compile Include="SongModule.cs" />
-    <Compile Include="ViewModels\SongCollectionViewModel.cs" />
-    <Compile Include="ViewModels\SongViewModel.cs" />
-    <Compile Include="Views\SongCollection.xaml.cs">
-      <DependentUpon>SongCollection.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -123,30 +116,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CsPlayer.Regions\CsPlayer.Regions.csproj">
-      <Project>{28928a72-ec5e-42a7-b92a-061c274aebaf}</Project>
-      <Name>CsPlayer.Regions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CsPlayer.Shared\CsPlayer.Shared.csproj">
-      <Project>{69fea1fe-c9f6-4200-b1b4-60a331860448}</Project>
-      <Name>CsPlayer.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\SongCollection.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>IF NOT EXIST "$(SolutionDir)\CsPlayer\bin\Debug\modules\SongModule\" MKDIR "$(SolutionDir)\CsPlayer\bin\Debug\modules\SongModule\"
-COPY "$(TargetDir)*" "$(SolutionDir)\CsPlayer\bin\Debug\modules\SongModule\"</PostBuildEvent>
+    <PostBuildEvent>IF NOT EXIST "$(SolutionDir)\CsPlayer\bin\Debug\modules\PlayerModule\" MKDIR "$(SolutionDir)\CsPlayer\bin\Debug\modules\PlayerModule\"
+COPY "$(TargetDir)*" "$(SolutionDir)\CsPlayer\bin\Debug\modules\PlayerModule\"</PostBuildEvent>
   </PropertyGroup>
 </Project>
