@@ -16,34 +16,34 @@ namespace CsPlayer.SongModule.ViewModels
     {
         public string Name
         {
-            get { return this.song.Name; }
+            get { return Song.Name; }
         }
 
         public string FilePath
         {
-            get { return this.song.FilePath; }
+            get { return Song.FilePath; }
         }
 
         public bool Valid
         {
-            get { return this.song.Valid; }
+            get { return Song.Valid; }
             private set
             {
-                this.song.Valid = value;
+                Song.Valid = value;
                 this.RaisePropertyChanged(nameof(Valid));
             }
         }
+
+        public Song Song { get; set; }
 
         public ICommand ButtonAdd { get; private set; }
         public ICommand ButtonCheck { get; private set; }
         public ICommand ButtonDelete { get; private set; }
 
-        internal Song song;
         private IEventAggregator eventAggregator;
 
-        public SongViewModel(Song song, IEventAggregator eventAggregator)
+        public SongViewModel(IEventAggregator eventAggregator)
         {
-            this.song = song;
             this.eventAggregator = eventAggregator;
 
             ButtonAdd = new DelegateCommand(this.ButtonAddClicked);
@@ -56,7 +56,7 @@ namespace CsPlayer.SongModule.ViewModels
         public void ButtonAddClicked()
         {
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
-                .Publish(new List<Song>() { this.song });
+                .Publish(new List<Song>() { Song });
         }
 
         public void ButtonCheckClicked()
@@ -67,7 +67,7 @@ namespace CsPlayer.SongModule.ViewModels
         public void ButtonDeleteClicked()
         {
             this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
-                .Publish(this.song);
+                .Publish(Song);
         }
     }
 }

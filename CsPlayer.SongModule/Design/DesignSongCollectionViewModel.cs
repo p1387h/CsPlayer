@@ -19,10 +19,10 @@ namespace CsPlayer.SongModule.Design
 
             DisplayedSongs = new List<SongViewModel>()
             {
-                new SongViewModel(new Song(@"C:\User\Desktop\TestSongOne.mp3"), eventAggregator),
-                new SongViewModel(new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\TestSongTwo.mp3"),eventAggregator),
-                new SongViewModel(new Song(@"C:\User\Desktop\InvalidSongs\TestSongOne.mp3", false),eventAggregator),
-                new SongViewModel(new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\InvalidSongs\TestSongTwo.mp3", false),eventAggregator),
+                new SongViewModel(eventAggregator) { Song = new Song(@"C:\User\Desktop\TestSongOne.mp3") },
+                new SongViewModel(eventAggregator) { Song = new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\TestSongTwo.mp3") },
+                new SongViewModel(eventAggregator) { Song = new Song(@"C:\User\Desktop\InvalidSongs\TestSongOne.mp3", false) },
+                new SongViewModel(eventAggregator) { Song = new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\InvalidSongs\TestSongTwo.mp3", false) },
             };
         }
     }

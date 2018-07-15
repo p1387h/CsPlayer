@@ -1,5 +1,6 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
+using Microsoft.Practices.ServiceLocation;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Events;
@@ -82,7 +83,7 @@ namespace CsPlayer.SongModule.ViewModels
         public void ButtonAddAllClicked()
         {
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
-                .Publish(this.DisplayedSongs.Select(x => x.song).ToList());
+                .Publish(this.DisplayedSongs.Select(x => x.Song).ToList());
         }
 
         public void ButtonLoadClicked()
@@ -98,7 +99,12 @@ namespace CsPlayer.SongModule.ViewModels
                 var files = fileDialog.FileNames;
                 var songViewModels = files
                     .Select(x => new Song(x))
-                    .Select(x => new SongViewModel(x, this.eventAggregator));
+                    .Select(x =>
+                    {
+                        var viewModel = ServiceLocator.Current.GetInstance<SongViewModel>();
+                        viewModel.Song = x;
+                        return viewModel;
+                    });
 
                 // Do not overwrite any existing / already loaded instances.
                 if(songViewModels.Any() && DisplayedSongs == null)
