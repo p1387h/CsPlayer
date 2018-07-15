@@ -40,10 +40,16 @@
                     </DockPanel.Style>
                     <!-- Arrows left -->
                     <UniformGrid DockPanel.Dock="Left" Rows="2" Columns="1">
-                        <Button Style="{StaticResource ButtonIconStyle}" Background="Transparent" BorderThickness="0">
+                        <Button Style="{StaticResource ButtonIconStyle}" 
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding ButtonUp}">
                             <iconPacks:Material Kind="ArrowUpBold"></iconPacks:Material>
                         </Button>
-                        <Button Style="{StaticResource ButtonIconStyle}" Background="Transparent" BorderThickness="0">
+                        <Button Style="{StaticResource ButtonIconStyle}" 
+                                Background="Transparent" 
+                                BorderThickness="0"
+                                Command="{Binding ButtonDown}">
                             <iconPacks:Material Kind="ArrowDownBold"></iconPacks:Material>
                         </Button>
                     </UniformGrid>
@@ -52,7 +58,8 @@
                         <TextBlock Text="XX:XX:XX" VerticalAlignment="Center" Margin="20,0,40,0"></TextBlock>
                         <Button Style="{StaticResource ButtonIconStyle}" 
                                 VerticalAlignment="Top" 
-                                HorizontalAlignment="Right">
+                                HorizontalAlignment="Right"
+                                Command="{Binding ButtonDelete}">
                             <iconPacks:Material Kind="Delete"></iconPacks:Material>
                         </Button>
                     </Grid>

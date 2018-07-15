@@ -14,7 +14,7 @@ namespace CsPlayer.PlayerModule.ViewModels
 {
     class PlayerViewModel : BindableBase
     {
-        private PlaylistViewModel _playlist = new PlaylistViewModel(new Playlist("Empty Name"));
+        private PlaylistViewModel _playlist;
         public PlaylistViewModel Playlist
         {
             get { return _playlist; }
@@ -33,6 +33,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         public PlayerViewModel(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
+            Playlist = new PlaylistViewModel(new Playlist("Empty Name"), eventAggregator);
 
             ButtonPrevious = new DelegateCommand(this.ButtonPreviousClicked);
             ButtonPlay = new DelegateCommand(this.ButtonPlayClicked);
@@ -43,14 +44,25 @@ namespace CsPlayer.PlayerModule.ViewModels
 
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
                 .Subscribe(this.AddSongsToPlaylist, ThreadOption.UIThread);
+            this.eventAggregator.GetEvent<RemoveSongFromPlaylistEvent>()
+                .Subscribe(this.RemoveSongFromPlaylist, ThreadOption.UIThread);
         }
 
+
+        // ---------- EventAggregator
         private void AddSongsToPlaylist(List<Song> songs)
         {
             foreach (var song in songs)
             {
-                Playlist.Songs.Add(new SongViewModel(song));
+                Playlist.Songs.Add(new SongViewModel(song, this.eventAggregator));
             }
+        }
+
+        private void RemoveSongFromPlaylist(Song song)
+        {
+            var toRemove = Playlist.Songs.FirstOrDefault(x => x.FilePath.Equals(song.FilePath));
+
+            Playlist.Songs.Remove(toRemove);
         }
 
 

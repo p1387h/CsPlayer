@@ -1,4 +1,5 @@
 ﻿using CsPlayer.Shared;
+using Prism.Events;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
@@ -35,14 +36,16 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ObservableCollection<SongViewModel> Songs { get; private set; }
 
         private Playlist playlist;
+        private IEventAggregator eventAggregator;
 
-        public PlaylistViewModel(Playlist playlist)
+        public PlaylistViewModel(Playlist playlist, IEventAggregator eventAggregator)
         {
             this.playlist = playlist;
+            this.eventAggregator = eventAggregator;
 
             // Wrap the references in view model ones.
             Songs = new ObservableCollection<SongViewModel>();
-            Songs.AddRange(playlist.Songs.Select(x => new SongViewModel(x)));
+            Songs.AddRange(playlist.Songs.Select(x => new SongViewModel(x, this.eventAggregator)));
             Songs.CollectionChanged += this.SongCollectionChanged;
         }
 

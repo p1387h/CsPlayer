@@ -49,15 +49,19 @@ namespace CsPlayer.SongModule.ViewModels
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
 
-            this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>().Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
+            this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
+                .Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
         }
 
+
+        // ---------- EventAggregator
         private void RemoveSongFromSongList(Song song)
         {
             var toRemove = this.DisplayedSongs.FirstOrDefault(x => x.FilePath.Equals(song.FilePath));
 
             DisplayedSongs.Remove(toRemove);
         }
+
 
         // ---------- Buttons
         public void ButtonClearAllClicked()
