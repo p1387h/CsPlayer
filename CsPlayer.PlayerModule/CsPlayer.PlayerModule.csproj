@@ -95,6 +95,7 @@
     </Compile>
     <Compile Include="Converter\TimeSpanToStringConverter.cs" />
     <Compile Include="Design\DesignPlayerViewModel.cs" />
+    <Compile Include="Helper\DesignModeChecker.cs" />
     <Compile Include="PlayerModule.cs" />
     <Compile Include="ViewModels\PlayerViewModel.cs" />
     <Compile Include="ViewModels\PlaylistViewModel.cs" />

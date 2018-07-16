@@ -1,4 +1,5 @@
 ﻿using CsPlayer.PlayerEvents;
+using CsPlayer.PlayerModule.Helper;
 using CsPlayer.Shared;
 using NAudio.Wave;
 using Prism.Commands;
@@ -7,6 +8,7 @@ using Prism.Logging;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,7 +63,9 @@ namespace CsPlayer.PlayerModule.ViewModels
                 try
                 {
                     // Prevent exceptions by testing the existence of the file itself.
-                    if (_song != null && _song.Valid)
+                    // DesignMode must be checked since the FileReader must not load
+                    // design data.
+                    if (_song != null && _song.Valid && !DesignModeChecker.IsInDesignMode())
                     {
                         Mp3Reader = new Mp3FileReader(_song.FilePath);
                         TotalTime = Mp3Reader.TotalTime;

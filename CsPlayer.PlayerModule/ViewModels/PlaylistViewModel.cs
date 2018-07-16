@@ -1,5 +1,5 @@
 ﻿using CsPlayer.Shared;
-using Microsoft.Practices.ServiceLocation;
+using Microsoft.Practices.Unity;
 using Prism.Events;
 using Prism.Logging;
 using Prism.Mvvm;
@@ -54,7 +54,7 @@ namespace CsPlayer.PlayerModule.ViewModels
                 Songs = new ObservableCollection<SongViewModel>();
                 Songs.AddRange(_playlist.Songs.Select(x =>
                     {
-                        var viewModel = ServiceLocator.Current.GetInstance<SongViewModel>();
+                        var viewModel = this.container.Resolve<SongViewModel>();
                         viewModel.Song = x;
                         return viewModel;
                     }));
@@ -71,10 +71,15 @@ namespace CsPlayer.PlayerModule.ViewModels
 
         public ObservableCollection<SongViewModel> Songs { get; private set; }
 
+        private IUnityContainer container;
         private IEventAggregator eventAggregator;
 
-        public PlaylistViewModel(IEventAggregator eventAggregator)
+        public PlaylistViewModel(IUnityContainer container, IEventAggregator eventAggregator)
         {
+            if (container == null || eventAggregator == null)
+                throw new ArgumentException();
+
+            this.container = container;
             this.eventAggregator = eventAggregator;
         }
 

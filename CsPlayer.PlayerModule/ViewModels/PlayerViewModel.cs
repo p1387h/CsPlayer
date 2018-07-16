@@ -1,6 +1,6 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
-using Microsoft.Practices.ServiceLocation;
+using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Logging;
@@ -30,13 +30,18 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonNext { get; private set; }
         public ICommand ButtonSaveChanges { get; private set; }
 
+        private IUnityContainer container;
         private IEventAggregator eventAggregator;
 
-        public PlayerViewModel(IEventAggregator eventAggregator)
+        public PlayerViewModel(IUnityContainer container, IEventAggregator eventAggregator)
         {
+            if (container == null || eventAggregator == null)
+                throw new ArgumentException();
+
+            this.container = container;
             this.eventAggregator = eventAggregator;
 
-            Playlist = ServiceLocator.Current.GetInstance<PlaylistViewModel>();
+            Playlist = this.container.Resolve<PlaylistViewModel>();
             Playlist.Playlist = new Playlist("Empty Name");
 
             ButtonPrevious = new DelegateCommand(this.ButtonPreviousClicked);
@@ -58,7 +63,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         {
             foreach (var song in songs)
             {
-                var viewModel = ServiceLocator.Current.GetInstance<SongViewModel>();
+                var viewModel = this.container.Resolve<SongViewModel>();
                 viewModel.Song = song;
 
                 Playlist.Songs.Add(viewModel);

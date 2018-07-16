@@ -1,5 +1,6 @@
 ﻿using CsPlayer.PlayerModule.ViewModels;
 using CsPlayer.Shared;
+using Microsoft.Practices.Unity;
 using Prism.Events;
 using Prism.Logging;
 using System;
@@ -12,19 +13,35 @@ namespace CsPlayer.PlayerModule.Design
 {
     class DesignPlayerViewModel
     {
+        private class DesignLogger : ILoggerFacade
+        {
+            public void Log(string message, Category category, Priority priority)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public PlaylistViewModel Playlist { get; private set; }
 
         public DesignPlayerViewModel()
         {
-            var eventAggregator = new EventAggregator();
+            var container = new UnityContainer();
             var playlistModel = new Playlist("TestPlaylist");
+
+            container.RegisterInstance<IEventAggregator>(new EventAggregator());
+            container.RegisterInstance<ILoggerFacade>(new DesignLogger());
+            container.RegisterInstance<IUnityContainer>(container);
 
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\TestSongOne.mp3"));
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\TestSongTwo.mp3"));
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\InvalidSongs\TestSongOne.mp3", false));
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\InvalidSongs\TestSongTwo.mp3", false));
 
-            Playlist = new PlaylistViewModel(eventAggregator) { Playlist = playlistModel };
+            //Playlist = new PlaylistViewModel(container, eventAggregator) { Playlist = playlistModel };
+            var viewModel = container.Resolve<PlaylistViewModel>();
+            viewModel.Playlist = playlistModel;
+
+            Playlist = viewModel;
         }
     }
 }
