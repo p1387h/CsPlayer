@@ -149,10 +149,14 @@ namespace CsPlayer.PlayerModule.ViewModels
 
         private void HandleTimerTick(object sender, EventArgs e)
         {
-            // Prevent stuttering.
-            this.isTimerTickSetter = true;
-            CurrentTime = Mp3Reader.CurrentTime;
-            this.isTimerTickSetter = false;
+            // In design mode the reader is not instantiated due to requiring a path.
+            if(!DesignModeChecker.IsInDesignMode())
+            {
+                // Prevent stuttering.
+                this.isTimerTickSetter = true;
+                CurrentTime = Mp3Reader.CurrentTime;
+                this.isTimerTickSetter = false;
+            }
         }
 
 

@@ -65,10 +65,19 @@
                                    Margin="20,0,40,0" 
                                    Text="{Binding TotalTime, Converter={StaticResource TimeSpanStringConverter}}">
                         </TextBlock>
-                        <Button Style="{StaticResource ButtonIconStyle}" 
-                                VerticalAlignment="Top" 
+                        <Button VerticalAlignment="Top" 
                                 HorizontalAlignment="Right"
                                 Command="{Binding ButtonDelete}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource ButtonIconStyle}">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             <iconPacks:Material Kind="Close"></iconPacks:Material>
                         </Button>
                     </Grid>
