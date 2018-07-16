@@ -11,7 +11,10 @@ namespace CsPlayer.PlayerModule.Helper
     {
         public static bool IsInDesignMode()
         {
-            return !(Application.Current is App);
+            System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess();
+            bool res = process.ProcessName == "devenv";
+            process.Dispose();
+            return res;
         }
     }
 }
