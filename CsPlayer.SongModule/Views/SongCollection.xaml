@@ -92,7 +92,8 @@
             <TextBox DockPanel.Dock="Left" Height="12"></TextBox>
         </DockPanel>
         <!-- Buttons above the List of songs / Drop area -->
-        <DockPanel DockPanel.Dock="Top">
+        <DockPanel DockPanel.Dock="Top"
+                   Margin="0,10,2,0">
             <DockPanel.Style>
                 <Style TargetType="DockPanel">
                     <Setter Property="Visibility" Value="Visible"></Setter>
@@ -104,55 +105,61 @@
                 </Style>
             </DockPanel.Style>
             <Button DockPanel.Dock="Right" 
-                        Command="{Binding ButtonClearAll}" 
-                        Style="{StaticResource ButtonIconStyle}">
+                    Command="{Binding ButtonClearAll}" 
+                    Style="{StaticResource ButtonIconStyle}">
                 <iconPacks:Material Kind="Delete"></iconPacks:Material>
             </Button>
             <Button DockPanel.Dock="Right" 
-                        Command="{Binding ButtonCheckAll}" 
-                        Style="{StaticResource ButtonIconStyle}">
+                    Command="{Binding ButtonCheckAll}" 
+                    Style="{StaticResource ButtonIconStyle}">
                 <iconPacks:Material Kind="Settings"></iconPacks:Material>
             </Button>
             <Button DockPanel.Dock="Right" 
-                        Command="{Binding ButtonAddAll}" 
-                        Style="{StaticResource ButtonIconStyle}">
+                    Command="{Binding ButtonAddAll}" 
+                    Style="{StaticResource ButtonIconStyle}">
                 <iconPacks:Material Kind="Play"></iconPacks:Material>
             </Button>
             <TextBlock DockPanel.Dock="Left"></TextBlock>
         </DockPanel>
-        <!-- List of songs / Drop area -->
-        <Grid Margin="0,10">
-            <ListView ItemsSource="{Binding DisplayedSongs}" 
-                      ItemTemplate="{StaticResource SongDataTemplate}" 
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListView.Style>
-                    <Style TargetType="ListView" BasedOn="{StaticResource MetroListView}">
-                        <Setter Property="Visibility" Value="Visible"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding DisplayedSongs}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Hidden"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListView.Style>
-            </ListView>
-            <Border BorderThickness="2" BorderBrush="{StaticResource AccentColorBrush4}">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Hidden"></Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding DisplayedSongs}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Visible"></Setter>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
+        <!-- Container for all song related elements -->
+        <Border BorderThickness="2" 
+                BorderBrush="{StaticResource AccentColorBrush4}"
+                Margin="0,10">
+            <Grid Background="Transparent"
+                  AllowDrop="True">
+                <!-- Drop area text -->
                 <TextBlock VerticalAlignment="Center" 
                            HorizontalAlignment="Center" 
                            FontSize="30" Text="Drop files" 
                            Foreground="{StaticResource AccentColorBrush}">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DisplayedSongs}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
                 </TextBlock>
-            </Border>
-        </Grid>
+                <!-- List of songs -->
+                <ListView ItemsSource="{Binding DisplayedSongs}" 
+                              ItemTemplate="{StaticResource SongDataTemplate}" 
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              BorderBrush="White">
+                    <ListView.Style>
+                        <Style TargetType="ListView" BasedOn="{StaticResource MetroListView}">
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DisplayedSongs}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Hidden"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListView.Style>
+                </ListView>
+            </Grid>
+        </Border>
     </DockPanel>
 </UserControl>
