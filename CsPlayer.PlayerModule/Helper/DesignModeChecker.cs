@@ -11,10 +11,8 @@ namespace CsPlayer.PlayerModule.Helper
     {
         public static bool IsInDesignMode()
         {
-            System.Diagnostics.Process process = System.Diagnostics.Process.GetCurrentProcess();
-            bool res = process.ProcessName == "devenv";
-            process.Dispose();
-            return res;
+            var maybeExpressionUseLayoutRounding = Application.Current.Resources["ExpressionUseLayoutRounding"] as bool?;
+            return maybeExpressionUseLayoutRounding ?? false;
         }
     }
 }
