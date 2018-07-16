@@ -37,6 +37,7 @@ namespace CsPlayer.SongModule.ViewModels
         public ICommand ButtonCheckAll { get; private set; }
         public ICommand ButtonAddAll { get; private set; }
         public ICommand ButtonLoad { get; private set; }
+        public ICommand ButtonClearFilter { get; private set; }
 
         private IUnityContainer container;
         private IEventAggregator eventAggregator;
@@ -54,6 +55,7 @@ namespace CsPlayer.SongModule.ViewModels
             ButtonCheckAll = new DelegateCommand(this.ButtonCheckAllClicked);
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
+            ButtonClearFilter = new DelegateCommand(this.ButtonClearFilterClicked);
 
             this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
                 .Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
@@ -66,32 +68,38 @@ namespace CsPlayer.SongModule.ViewModels
             var toRemove = this.DisplayedSongs.FirstOrDefault(x => x.FilePath.Equals(song.FilePath));
 
             DisplayedSongs.Remove(toRemove);
+
+            // Reset view.
+            if(!DisplayedSongs.Any())
+            {
+                DisplayedSongs = null;
+            }
         }
 
 
         // ---------- Buttons
-        public void ButtonClearAllClicked()
+        private void ButtonClearAllClicked()
         {
             DisplayedSongs = null;
         }
 
-        public void ButtonClearInvalidClicked()
+        private void ButtonClearInvalidClicked()
         {
             throw new NotImplementedException();
         }
 
-        public void ButtonCheckAllClicked()
+        private void ButtonCheckAllClicked()
         {
             throw new NotImplementedException();
         }
 
-        public void ButtonAddAllClicked()
+        private void ButtonAddAllClicked()
         {
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
                 .Publish(this.DisplayedSongs.Select(x => x.Song).ToList());
         }
 
-        public void ButtonLoadClicked()
+        private void ButtonLoadClicked()
         {
             var fileDialog = new OpenFileDialog()
             {
@@ -122,6 +130,11 @@ namespace CsPlayer.SongModule.ViewModels
                     DisplayedSongs.Add(viewModel);
                 }
             }
+        }
+
+        private void ButtonClearFilterClicked()
+        {
+            throw new NotImplementedException();
         }
     }
 }

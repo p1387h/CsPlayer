@@ -86,7 +86,10 @@
         </WrapPanel>
         <!-- Searchbar bottom -->
         <DockPanel DockPanel.Dock="Bottom">
-            <Button DockPanel.Dock="Right" Style="{StaticResource ButtonIconStyle}" Margin="0,2,0,2">
+            <Button DockPanel.Dock="Right" 
+                    Style="{StaticResource ButtonIconStyle}" 
+                    Margin="0,2,0,2"
+                    Command="{Binding ButtonClearFilter}">
                 <iconPacks:Material Kind="Close"></iconPacks:Material>
             </Button>
             <TextBox DockPanel.Dock="Left" Height="12"></TextBox>
