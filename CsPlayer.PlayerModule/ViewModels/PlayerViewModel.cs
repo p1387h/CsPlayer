@@ -71,7 +71,9 @@ namespace CsPlayer.PlayerModule.ViewModels
 
             if (this.Playlist.ActiveSong != null)
             {
+                Playlist.ActiveSong.CurrentTime = TimeSpan.FromSeconds(0);
                 Playlist.ActiveSong.Mp3Reader.CurrentTime = TimeSpan.FromSeconds(0);
+                Playlist.ActiveSong.IsPlaying = false;
             }
 
             this.waveOut = new WaveOut();
@@ -136,6 +138,8 @@ namespace CsPlayer.PlayerModule.ViewModels
             {
                 this.waveOut.Init(Playlist.ActiveSong.Mp3Reader);
                 this.waveOut.Play();
+
+                Playlist.ActiveSong.IsPlaying = true;
             }
         }
 

@@ -37,11 +37,14 @@ namespace CsPlayer.PlayerModule.Design
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\InvalidSongs\TestSongOne.mp3", false));
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\InvalidSongs\TestSongTwo.mp3", false));
 
-            //Playlist = new PlaylistViewModel(container, eventAggregator) { Playlist = playlistModel };
             var viewModel = container.Resolve<PlaylistViewModel>();
             viewModel.Playlist = playlistModel;
 
+            // List of songs:
             Playlist = viewModel;
+
+            // Playing song:
+            Playlist.Songs.First().IsPlaying = true;
         }
     }
 }

@@ -93,6 +93,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converter\TimeSpanToIntConverter.cs" />
     <Compile Include="Converter\TimeSpanToStringConverter.cs" />
     <Compile Include="Design\DesignPlayerViewModel.cs" />
     <Compile Include="Helper\DesignModeChecker.cs" />

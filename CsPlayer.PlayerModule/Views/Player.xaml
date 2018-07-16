@@ -13,7 +13,8 @@
              xmlns:converter="clr-namespace:CsPlayer.PlayerModule.Converter"
              d:DataContext="{d:DesignInstance design:DesignPlayerViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
-        <converter:TimeSpanToStringConverter x:Key="TimeSpanConverter"></converter:TimeSpanToStringConverter>
+        <converter:TimeSpanToStringConverter x:Key="TimeSpanStringConverter"></converter:TimeSpanToStringConverter>
+        <converter:TimeSpanToIntConverter x:Key="TimeSpanIntConverter"></converter:TimeSpanToIntConverter>
         <!-- Custom TextBlock additions -->
         <Style x:Key="TextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource MetroTextBlock}">
             <Setter Property="FontFamily" Value="Verdana"></Setter>
@@ -37,6 +38,9 @@
                                 <DataTrigger Binding="{Binding Valid}" Value="False">
                                     <Setter Property="Background" Value="#ff8080"></Setter>
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource AccentColorBrush4}"></Setter>
+                                </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </DockPanel.Style>
@@ -59,24 +63,58 @@
                     <Grid DockPanel.Dock="Right">
                         <TextBlock VerticalAlignment="Center" 
                                    Margin="20,0,40,0" 
-                                   Text="{Binding TotalTime, Converter={StaticResource TimeSpanConverter}}">
+                                   Text="{Binding TotalTime, Converter={StaticResource TimeSpanStringConverter}}">
                         </TextBlock>
                         <Button Style="{StaticResource ButtonIconStyle}" 
                                 VerticalAlignment="Top" 
                                 HorizontalAlignment="Right"
                                 Command="{Binding ButtonDelete}">
-                            <iconPacks:Material Kind="Delete"></iconPacks:Material>
+                            <iconPacks:Material Kind="Close"></iconPacks:Material>
                         </Button>
                     </Grid>
                     <!-- Index of song -->
                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center">N.</TextBlock>
-                    <!-- Name of song / current playtime -->
+                    <!-- Name of song for non playing titles -->
                     <TextBlock DockPanel.Dock="Left" 
                                VerticalAlignment="Center" 
                                Text="{Binding Name}" 
                                Margin="20,0,0,0"
                                TextWrapping="Wrap">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
                     </TextBlock>
+                    <!-- Playtime of the currently playing song -->
+                    <Grid Margin="20,0,0,0">
+                        <Grid.Style>
+                            <Style TargetType="Grid">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Slider Style="{DynamicResource FlatSlider}"
+                                VerticalAlignment="Center"
+                                Minimum="0"
+                                Maximum="{Binding TotalTime, Converter={StaticResource TimeSpanIntConverter}}"
+                                Value="{Binding CurrentTime, Converter={StaticResource TimeSpanIntConverter}, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                IsMoveToPointEnabled="True">
+                        </Slider>
+                        <TextBlock VerticalAlignment="Top" 
+                                   Text="{Binding Name}"
+                                   TextWrapping="Wrap">
+                        </TextBlock>
+                    </Grid>
                 </DockPanel>
             </Border>
         </DataTemplate>
@@ -85,7 +123,7 @@
         <!-- Header information -->
         <DockPanel DockPanel.Dock="Top">
             <TextBlock Margin="35,0,10,0" DockPanel.Dock="Left" Text="{Binding Playlist.SongCount}"></TextBlock>
-            <TextBlock Margin="20,0,40,0" DockPanel.Dock="Right" Text="{Binding Playlist.TotalTime, Converter={StaticResource TimeSpanConverter}}"></TextBlock>
+            <TextBlock Margin="20,0,40,0" DockPanel.Dock="Right" Text="{Binding Playlist.TotalTime, Converter={StaticResource TimeSpanStringConverter}}"></TextBlock>
             <TextBlock Margin="20,0" TextWrapping="Wrap" Text="{Binding Playlist.Name}"></TextBlock>
         </DockPanel>
         <!-- Player bottom buttons -->

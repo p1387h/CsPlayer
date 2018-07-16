@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace CsPlayer.PlayerModule.ViewModels
 {
@@ -36,6 +37,44 @@ namespace CsPlayer.PlayerModule.ViewModels
             {
                 Song.Valid = value;
                 this.RaisePropertyChanged(nameof(Valid));
+            }
+        }
+
+        private bool _isPlaying = false;
+        public bool IsPlaying
+        {
+            get { return _isPlaying; }
+            set
+            {
+                SetProperty<bool>(ref _isPlaying, value);
+
+                // Starting / stopping the timer resets the internal saved
+                // remaining time.
+                if (value)
+                {
+                    this.timer.Start();
+                }
+                else
+                {
+                    this.timer.Stop();
+                }
+            }
+        }
+
+        private TimeSpan _currentTime;
+        public TimeSpan CurrentTime
+        {
+            get { return _currentTime; }
+            set
+            {
+                SetProperty<TimeSpan>(ref _currentTime, value);
+
+                // Only allow the user to change the current time.
+                // -> prevents stuttering.
+                if (!this.isTimerTickSetter)
+                {
+                    Mp3Reader.CurrentTime = value;
+                }
             }
         }
 
@@ -82,6 +121,15 @@ namespace CsPlayer.PlayerModule.ViewModels
             }
         }
 
+        // DispatcherTimer since updating the UI regarding the current time of the
+        // mp3 reader is necessary.
+        private DispatcherTimer timer = new DispatcherTimer();
+        // Flag for signaling the CurrentTime property that the timer updated the 
+        // value. Since the user has access to it as well and is able to change 
+        // the player's position in the mp3, setting the value with the timer 
+        // would otherwise cause the song to stutter.
+        private bool isTimerTickSetter = false;
+
         private IEventAggregator eventAggregator;
         private ILoggerFacade logger;
 
@@ -93,6 +141,18 @@ namespace CsPlayer.PlayerModule.ViewModels
             ButtonUp = new DelegateCommand(this.ButtonUpClicked);
             ButtonDown = new DelegateCommand(this.ButtonDownClicked);
             ButtonDelete = new DelegateCommand(this.ButtonDeleteClicked);
+
+            // Timer for updating the 
+            this.timer.Tick += this.HandleTimerTick;
+            this.timer.Interval = TimeSpan.FromSeconds(1);
+        }
+
+        private void HandleTimerTick(object sender, EventArgs e)
+        {
+            // Prevent stuttering.
+            this.isTimerTickSetter = true;
+            CurrentTime = Mp3Reader.CurrentTime;
+            this.isTimerTickSetter = false;
         }
 
 
