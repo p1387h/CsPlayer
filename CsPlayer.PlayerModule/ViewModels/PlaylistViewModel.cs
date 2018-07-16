@@ -1,4 +1,5 @@
-﻿using CsPlayer.Shared;
+﻿using CsPlayer.PlayerEvents;
+using CsPlayer.Shared;
 using Microsoft.Practices.Unity;
 using Prism.Events;
 using Prism.Logging;
@@ -60,8 +61,22 @@ namespace CsPlayer.PlayerModule.ViewModels
                     }));
                 Songs.CollectionChanged += this.SongCollectionChanged;
 
-                this.UpdatePlaylistInfo();
+                this.UpdatePlaylistTime();
             }
+        }
+
+        private SongViewModel _activeSong;
+        public SongViewModel ActiveSong
+        {
+            get { return _activeSong; }
+            set { SetProperty<SongViewModel>(ref _activeSong, value); }
+        }
+
+        private SongViewModel _selectedSong;
+        public SongViewModel SelectedSong
+        {
+            get { return _selectedSong; }
+            set { SetProperty<SongViewModel>(ref _selectedSong, value); }
         }
 
         public int SongCount
@@ -88,12 +103,12 @@ namespace CsPlayer.PlayerModule.ViewModels
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    Playlist.Songs.AddRange(e.NewItems.OfType<Song>());
+                    Playlist.Songs.AddRange(e.NewItems.OfType<SongViewModel>().Select(x => x.Song));
                     break;
                 case NotifyCollectionChangedAction.Move:
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    var removedFilePaths = e.OldItems.OfType<Song>().Select(x => x.FilePath);
+                    var removedFilePaths = e.OldItems.OfType<SongViewModel>().Select(x => x.FilePath);
 
                     Playlist.Songs.RemoveAll(x => removedFilePaths.Contains(x.FilePath));
                     break;
@@ -104,21 +119,80 @@ namespace CsPlayer.PlayerModule.ViewModels
                     break;
             }
 
-            this.UpdatePlaylistInfo();
+            this.UpdatePlaylistTime();
             this.RaisePropertyChanged(nameof(SongCount));
         }
 
-        private void UpdatePlaylistInfo()
+        private void UpdatePlaylistTime()
         {
             if (Songs.Any())
             {
                 TotalTime = Songs
+                    .Where(x => x.Valid)
                     .Select(x => x.TotalTime)
                     .Aggregate((total, x) => total.Add(x));
             }
             else
             {
                 TotalTime = new TimeSpan();
+            }
+        }
+
+        /// <summary>
+        /// Function for moving the <see cref="ActiveSong"/> reference to the next 
+        /// valid playable instance. This function must be called before starting 
+        /// any audio player istances due to the <see cref="ActiveSong"/> returning 
+        /// null otherwise.
+        /// </summary>
+        public void MoveToNextSong()
+        {
+            var tempRef = ActiveSong;
+            ActiveSong = null;
+
+            if (Songs.Any(x => x.Valid))
+            {
+                var possibleSongs = Songs.Where(x => x.Valid).ToList();
+
+                // First time initialization.
+                if(tempRef == null && SelectedSong != null)
+                {
+                    ActiveSong = SelectedSong;
+                }
+                else if (tempRef == null)
+                {
+                    ActiveSong = possibleSongs.First();
+                }
+                // Move through the collection of songs.
+                else
+                {
+                    var nextIndex = possibleSongs.IndexOf(tempRef) + 1;
+                    var nextSong = possibleSongs.ElementAt(nextIndex % possibleSongs.Count);
+
+                    ActiveSong = nextSong;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function for moving the <see cref="ActiveSong"/> reference to a previous 
+        /// valid playable instance.
+        /// </summary>
+        public void MovePreviousSong()
+        {
+            var tempRef = ActiveSong;
+            ActiveSong = null;
+
+            if (tempRef != null && Songs.Any(x => x.Valid))
+            {
+                var possibleSongs = Songs.Where(x => x.Valid).ToList();
+                var prevIndex = possibleSongs.IndexOf(tempRef) - 1;
+
+                if (prevIndex < 0)
+                {
+                    prevIndex = possibleSongs.Count - 1;
+                }
+
+                ActiveSong = possibleSongs.ElementAt(prevIndex);
             }
         }
     }

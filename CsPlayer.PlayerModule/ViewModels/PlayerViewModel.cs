@@ -1,6 +1,7 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
 using Microsoft.Practices.Unity;
+using NAudio.Wave;
 using Prism.Commands;
 using Prism.Events;
 using Prism.Logging;
@@ -30,16 +31,21 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonNext { get; private set; }
         public ICommand ButtonSaveChanges { get; private set; }
 
+        // The player itself.
+        private WaveOut waveOut = new WaveOut();
+
         private IUnityContainer container;
         private IEventAggregator eventAggregator;
+        private ILoggerFacade logger;
 
-        public PlayerViewModel(IUnityContainer container, IEventAggregator eventAggregator)
+        public PlayerViewModel(IUnityContainer container, IEventAggregator eventAggregator, ILoggerFacade logger)
         {
-            if (container == null || eventAggregator == null)
+            if (container == null || eventAggregator == null || logger == null)
                 throw new ArgumentException();
 
             this.container = container;
             this.eventAggregator = eventAggregator;
+            this.logger = logger;
 
             Playlist = this.container.Resolve<PlaylistViewModel>();
             Playlist.Playlist = new Playlist("Empty Name");
@@ -55,6 +61,31 @@ namespace CsPlayer.PlayerModule.ViewModels
                 .Subscribe(this.AddSongsToPlaylist, ThreadOption.UIThread);
             this.eventAggregator.GetEvent<RemoveSongFromPlaylistEvent>()
                 .Subscribe(this.RemoveSongFromPlaylist, ThreadOption.UIThread);
+        }
+
+        private void ResetWaveOut()
+        {
+            this.waveOut.Stop();
+            this.waveOut.PlaybackStopped -= this.HandlePlaybackStopped;
+            this.waveOut.Dispose();
+
+            if (this.Playlist.ActiveSong != null)
+            {
+                Playlist.ActiveSong.Mp3Reader.CurrentTime = TimeSpan.FromSeconds(0);
+            }
+
+            this.waveOut = new WaveOut();
+            this.waveOut.PlaybackStopped += this.HandlePlaybackStopped;
+        }
+
+        private void HandlePlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            if (e.Exception != null)
+            {
+                this.logger.Log(e.Exception.Message, Category.Exception, Priority.High);
+            }
+
+            this.ButtonNextClicked();
         }
 
 
@@ -81,27 +112,49 @@ namespace CsPlayer.PlayerModule.ViewModels
         // ---------- Buttons
         private void ButtonPreviousClicked()
         {
-            throw new NotImplementedException();
+            this.ResetWaveOut();
+            Playlist.MovePreviousSong();
+            this.ButtonPlayClicked();
         }
 
         private void ButtonPlayClicked()
         {
-            throw new NotImplementedException();
+            // Force the playlist to move to the next song if no other one 
+            // is currently selected. Needed for initial song to be chosen.
+            if (Playlist.ActiveSong == null)
+            {
+                Playlist.MoveToNextSong();
+            }
+
+            // Differentiate between pausing and reinitializing the player
+            // in order to prevent playing the same song twice.
+            if (this.waveOut.PlaybackState.Equals(PlaybackState.Paused))
+            {
+                this.waveOut.Resume();
+            }
+            else if (Playlist.ActiveSong != null && !this.waveOut.PlaybackState.Equals(PlaybackState.Playing))
+            {
+                this.waveOut.Init(Playlist.ActiveSong.Mp3Reader);
+                this.waveOut.Play();
+            }
         }
 
         private void ButtonPauseClicked()
         {
-            throw new NotImplementedException();
+            this.waveOut.Pause();
         }
 
         private void ButtonStopClicked()
         {
-            throw new NotImplementedException();
+            this.ResetWaveOut();
+            Playlist.ActiveSong = null;
         }
 
         private void ButtonNextClicked()
         {
-            throw new NotImplementedException();
+            this.ResetWaveOut();
+            Playlist.MoveToNextSong();
+            this.ButtonPlayClicked();
         }
 
         private void ButtonSaveChangesClicked()

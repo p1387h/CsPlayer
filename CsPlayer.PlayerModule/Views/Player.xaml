@@ -119,7 +119,8 @@
             <ListView x:Name="SongList" 
                       ItemsSource="{Binding Playlist.Songs}" 
                       ItemTemplate="{StaticResource SongDataTemplate}"
-                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      SelectedItem="{Binding Playlist.SelectedSong}">
             </ListView>
         </Grid>
     </DockPanel>
