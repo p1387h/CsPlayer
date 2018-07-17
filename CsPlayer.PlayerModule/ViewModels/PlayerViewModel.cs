@@ -94,12 +94,29 @@ namespace CsPlayer.PlayerModule.ViewModels
         // ---------- EventAggregator
         private void AddSongsToPlaylist(List<Song> songs)
         {
-            foreach (var song in songs)
-            {
-                var viewModel = this.container.Resolve<SongViewModel>();
-                viewModel.Song = song;
+            var viewModelsToAdd = songs.Select(x =>
+                {
+                    var viewModel = this.container.Resolve<SongViewModel>();
+                    viewModel.Song = x;
+                    return viewModel;
+                });
 
-                Playlist.Songs.Add(viewModel);
+            // Insert directly after the selected one if possible.
+            if (Playlist.SelectedSong != null)
+            {
+                var vmList = viewModelsToAdd.ToList();
+                vmList.Reverse();
+
+                foreach (var vm in vmList)
+                {
+                    Playlist.Songs.Insert(Playlist.SelectedSong.SongNumber, vm);
+                }
+            } else
+            {
+                foreach (var vm in viewModelsToAdd)
+                {
+                    Playlist.Songs.Add(vm);
+                }
             }
         }
 
