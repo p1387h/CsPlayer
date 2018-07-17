@@ -34,6 +34,8 @@ namespace CsPlayer.SongModule.ViewModels
             }
         }
 
+        public int Index { get; set; }
+
         internal Song Song { get; set; }
 
         public ICommand ButtonAdd { get; private set; }
@@ -67,7 +69,7 @@ namespace CsPlayer.SongModule.ViewModels
         public void ButtonDeleteClicked()
         {
             this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
-                .Publish(Song);
+                .Publish(Index);
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CsPlayer.PlayerEvents
 {
-    public class RemoveSongFromSongListEvent : PubSubEvent<Song>
+    public class RemoveSongFromSongListEvent : PubSubEvent<int>
     {
         public RemoveSongFromSongListEvent()
         {

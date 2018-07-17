@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -25,6 +26,9 @@ namespace CsPlayer.SongModule.ViewModels
             private set { SetProperty<string>(ref _header, value); }
         }
 
+        // Differentiate between the shown songs (= filtered ones) and 
+        // the collection of all songs.
+        private List<SongViewModel> songs = new List<SongViewModel>();
         private ObservableCollection<SongViewModel> _displayedSongs;
         public ObservableCollection<SongViewModel> DisplayedSongs
         {
@@ -36,7 +40,21 @@ namespace CsPlayer.SongModule.ViewModels
         public string SongFilter
         {
             get { return _songFilter; }
-            set { SetProperty<string>(ref _songFilter, value); }
+            set
+            {
+                SetProperty<string>(ref _songFilter, value);
+
+                IEnumerable<SongViewModel> newCollection = this.songs;
+
+                if(_songFilter.Any())
+                {
+                    // Highly ineffective, but works.
+                    newCollection = this.songs.Where(x => new Regex(value, RegexOptions.IgnoreCase).IsMatch(x.Name));
+                }
+
+                DisplayedSongs = new ObservableCollection<SongViewModel>(newCollection);
+                this.UpdateSongIndices();
+            }
         }
 
         public ICommand ButtonClearAll { get; private set; }
@@ -66,13 +84,24 @@ namespace CsPlayer.SongModule.ViewModels
                 .Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
         }
 
+        private void UpdateSongIndices()
+        {
+            // Only the visible ones must be updated since they can be removed.
+            for(int i = 0; i < DisplayedSongs.Count; i++)
+            {
+                DisplayedSongs[i].Index = i;
+            }
+        }
+
 
         // ---------- EventAggregator
-        private void RemoveSongFromSongList(Song song)
+        private void RemoveSongFromSongList(int index)
         {
-            var toRemove = this.DisplayedSongs.FirstOrDefault(x => x.FilePath.Equals(song.FilePath));
+            var toRemove = DisplayedSongs.ElementAt(index);
 
             DisplayedSongs.Remove(toRemove);
+            this.songs.Remove(toRemove);
+            this.UpdateSongIndices();
 
             // Reset view.
             if(!DisplayedSongs.Any())
@@ -86,6 +115,7 @@ namespace CsPlayer.SongModule.ViewModels
         private void ButtonClearAllClicked()
         {
             DisplayedSongs = null;
+            this.songs.Clear();
         }
 
         private void ButtonClearInvalidClicked()
@@ -133,6 +163,8 @@ namespace CsPlayer.SongModule.ViewModels
                 foreach (var viewModel in songViewModels)
                 {
                     DisplayedSongs.Add(viewModel);
+                    this.songs.Add(viewModel);
+                    this.UpdateSongIndices();
                 }
             }
         }
