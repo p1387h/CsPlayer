@@ -101,7 +101,7 @@
                                VerticalAlignment="Center" 
                                Text="{Binding Name}" 
                                Margin="20,0,0,0"
-                               TextWrapping="Wrap">
+                               TextWrapping="NoWrap">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
