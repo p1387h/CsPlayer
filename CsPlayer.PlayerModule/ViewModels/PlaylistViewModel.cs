@@ -62,6 +62,17 @@ namespace CsPlayer.PlayerModule.ViewModels
                 Songs.CollectionChanged += this.SongCollectionChanged;
 
                 this.UpdatePlaylistTime();
+                this.UpdatePlaylistSongNumbers();
+            }
+        }
+
+        private int _activeSongSongNumber = 0;
+        public int ActiveSongSongNumber
+        {
+            get { return _activeSongSongNumber; }
+            set
+            {
+                SetProperty<int>(ref _activeSongSongNumber, value);
             }
         }
 
@@ -69,7 +80,11 @@ namespace CsPlayer.PlayerModule.ViewModels
         public SongViewModel ActiveSong
         {
             get { return _activeSong; }
-            set { SetProperty<SongViewModel>(ref _activeSong, value); }
+            set
+            {
+                SetProperty<SongViewModel>(ref _activeSong, value);
+                ActiveSongSongNumber = value?.SongNumber ?? 0;
+            }
         }
 
         private SongViewModel _selectedSong;
@@ -120,6 +135,7 @@ namespace CsPlayer.PlayerModule.ViewModels
             }
 
             this.UpdatePlaylistTime();
+            this.UpdatePlaylistSongNumbers();
             this.RaisePropertyChanged(nameof(SongCount));
         }
 
@@ -135,6 +151,14 @@ namespace CsPlayer.PlayerModule.ViewModels
             else
             {
                 TotalTime = new TimeSpan();
+            }
+        }
+
+        private void UpdatePlaylistSongNumbers()
+        {
+            for(int i = 0; i < SongCount; i++)
+            {
+                Songs[i].SongNumber = i + 1;
             }
         }
 

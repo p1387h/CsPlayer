@@ -78,6 +78,13 @@ namespace CsPlayer.PlayerModule.ViewModels
             }
         }
 
+        private int _songNumber = -1;
+        public int SongNumber
+        {
+            get { return _songNumber; }
+            set { SetProperty<int>(ref _songNumber, value); }
+        }
+
         public ICommand ButtonUp { get; private set; }
         public ICommand ButtonDown { get; private set; }
         public ICommand ButtonDelete { get; private set; }
