@@ -61,6 +61,9 @@ namespace CsPlayer.PlayerModule.ViewModels
                 .Subscribe(this.AddSongsToPlaylist, ThreadOption.UIThread);
             this.eventAggregator.GetEvent<RemoveSongFromPlaylistEvent>()
                 .Subscribe(this.RemoveSongFromPlaylist, ThreadOption.UIThread);
+
+            // Reset once in order to intialize all necessary handlers and references.
+            this.ResetWaveOut();
         }
 
         private void ResetWaveOut()
