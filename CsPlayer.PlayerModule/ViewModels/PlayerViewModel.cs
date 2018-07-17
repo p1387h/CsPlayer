@@ -111,7 +111,8 @@ namespace CsPlayer.PlayerModule.ViewModels
                 {
                     Playlist.Songs.Insert(Playlist.SelectedSong.SongNumber, vm);
                 }
-            } else
+            }
+            else
             {
                 foreach (var vm in viewModelsToAdd)
                 {

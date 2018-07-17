@@ -157,7 +157,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         private void HandleTimerTick(object sender, EventArgs e)
         {
             // In design mode the reader is not instantiated due to requiring a path.
-            if(!DesignModeChecker.IsInDesignMode())
+            if (!DesignModeChecker.IsInDesignMode())
             {
                 // Prevent stuttering.
                 this.isTimerTickSetter = true;
@@ -170,12 +170,14 @@ namespace CsPlayer.PlayerModule.ViewModels
         // ---------- Buttons
         public void ButtonUpClicked()
         {
-            throw new NotImplementedException();
+            this.eventAggregator.GetEvent<MoveSongInPlaylistEvent>()
+                .Publish(new Tuple<SongMovementDirection, int>(SongMovementDirection.UP, SongNumber));
         }
 
         public void ButtonDownClicked()
         {
-            throw new NotImplementedException();
+            this.eventAggregator.GetEvent<MoveSongInPlaylistEvent>()
+                .Publish(new Tuple<SongMovementDirection, int>(SongMovementDirection.DOWN, SongNumber));
         }
 
         public void ButtonDeleteClicked()

@@ -111,6 +111,9 @@ namespace CsPlayer.PlayerModule.ViewModels
 
             this.container = container;
             this.eventAggregator = eventAggregator;
+
+            this.eventAggregator.GetEvent<MoveSongInPlaylistEvent>()
+                .Subscribe(this.MoveSongInPlaylist, ThreadOption.UIThread);
         }
 
         private void SongCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -165,7 +168,7 @@ namespace CsPlayer.PlayerModule.ViewModels
 
         private void UpdatePlaylistSongNumbers()
         {
-            for(int i = 0; i < SongCount; i++)
+            for (int i = 0; i < SongCount; i++)
             {
                 Songs[i].SongNumber = i + 1;
             }
@@ -187,7 +190,7 @@ namespace CsPlayer.PlayerModule.ViewModels
                 var possibleSongs = Songs.Where(x => x.Valid).ToList();
 
                 // First time initialization.
-                if(tempRef == null && SelectedSong != null)
+                if (tempRef == null && SelectedSong != null)
                 {
                     ActiveSong = SelectedSong;
                 }
@@ -227,6 +230,36 @@ namespace CsPlayer.PlayerModule.ViewModels
 
                 ActiveSong = possibleSongs.ElementAt(prevIndex);
             }
+        }
+
+
+        // ---------- EventAggregator
+        private void MoveSongInPlaylist(Tuple<SongMovementDirection, int> movement)
+        {
+            var direction = movement.Item1;
+            var currentIndex = movement.Item2 - 1;
+            var targetIndex = -1;
+
+            // Differentiate between the (two) possibilities and prevent out of
+            // bound exceptions.
+            switch (direction)
+            {
+                case SongMovementDirection.DOWN:
+                    targetIndex = (currentIndex + 1) % Songs.Count;
+                    break;
+                case SongMovementDirection.UP:
+                    targetIndex = currentIndex - 1;
+
+                    if (targetIndex < 0)
+                    {
+                        targetIndex = Songs.Count - 1;
+                    }
+                    break;
+                default:
+                    throw new ArgumentException();
+            }
+
+            Songs.Move(currentIndex, targetIndex);
         }
     }
 }
