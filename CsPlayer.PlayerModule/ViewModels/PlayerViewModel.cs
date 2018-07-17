@@ -1,5 +1,6 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Practices.Unity;
 using NAudio.Wave;
 using Prism.Commands;
@@ -29,7 +30,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonPause { get; private set; }
         public ICommand ButtonStop { get; private set; }
         public ICommand ButtonNext { get; private set; }
-        public ICommand ButtonSaveChanges { get; private set; }
+        public ICommand ButtonSavePlaylist { get; private set; }
 
         // The player itself.
         private WaveOut waveOut = new WaveOut();
@@ -37,25 +38,29 @@ namespace CsPlayer.PlayerModule.ViewModels
         private IUnityContainer container;
         private IEventAggregator eventAggregator;
         private ILoggerFacade logger;
+        private IDialogCoordinator dialogCoordinator;
 
-        public PlayerViewModel(IUnityContainer container, IEventAggregator eventAggregator, ILoggerFacade logger)
+        public PlayerViewModel(IUnityContainer container, IEventAggregator eventAggregator,
+            ILoggerFacade logger, IDialogCoordinator dialogCoordinator)
         {
-            if (container == null || eventAggregator == null || logger == null)
+            if (container == null || eventAggregator == null
+                || logger == null || dialogCoordinator == null)
                 throw new ArgumentException();
 
             this.container = container;
             this.eventAggregator = eventAggregator;
             this.logger = logger;
+            this.dialogCoordinator = dialogCoordinator;
 
             Playlist = this.container.Resolve<PlaylistViewModel>();
-            Playlist.Playlist = new Playlist("Empty Name");
+            Playlist.Playlist = new Playlist("");
 
             ButtonPrevious = new DelegateCommand(this.ButtonPreviousClicked);
             ButtonPlay = new DelegateCommand(this.ButtonPlayClicked);
             ButtonPause = new DelegateCommand(this.ButtonPauseClicked);
             ButtonStop = new DelegateCommand(this.ButtonStopClicked);
             ButtonNext = new DelegateCommand(this.ButtonNextClicked);
-            ButtonSaveChanges = new DelegateCommand(this.ButtonSaveChangesClicked);
+            ButtonSavePlaylist = new DelegateCommand(async () => { await Task.Run(this.ButtonSavePlaylistClicked); });
 
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
                 .Subscribe(this.AddSongsToPlaylist, ThreadOption.UIThread);
@@ -180,9 +185,42 @@ namespace CsPlayer.PlayerModule.ViewModels
             this.ButtonPlayClicked();
         }
 
-        private void ButtonSaveChangesClicked()
+        private async Task ButtonSavePlaylistClicked()
         {
-            throw new NotImplementedException();
+            var saveSettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "Save",
+                NegativeButtonText = "Cancel",
+                DefaultButtonFocus = MessageDialogResult.Affirmative,
+                AnimateHide = false
+            };
+            var notificationSettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "OK",
+                DefaultButtonFocus = MessageDialogResult.Affirmative
+            };
+            var name = await this.dialogCoordinator.ShowInputAsync(this, "Save Playlist", 
+                "Enter the name of the playlist.", saveSettings);
+
+            // Null means the user aborted the save.
+            if (name != null)
+            {
+                // Empty meand the user did not enter any name.
+                if (name.Equals(String.Empty))
+                {
+                    await this.dialogCoordinator.ShowMessageAsync(this, "Save Playlist", 
+                        "The playlist requires a name!", MessageDialogStyle.Affirmative, 
+                        notificationSettings);
+                }
+                else
+                {
+                    this.eventAggregator.GetEvent<SavePlaylistEvent>()
+                        .Publish(this.Playlist.Playlist);
+                    await this.dialogCoordinator.ShowMessageAsync(this, "Save Playlist",
+                        "Saving successfull", MessageDialogStyle.Affirmative,
+                        notificationSettings);
+                }
+            }
         }
     }
 }

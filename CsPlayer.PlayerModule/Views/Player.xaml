@@ -9,6 +9,8 @@
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+             Dialog:DialogParticipation.Register="{Binding}"
              xmlns:design="clr-namespace:CsPlayer.PlayerModule.Design"
              xmlns:converter="clr-namespace:CsPlayer.PlayerModule.Converter"
              d:DataContext="{d:DesignInstance design:DesignPlayerViewModel, IsDesignTimeCreatable=True}">
@@ -172,7 +174,7 @@
         </DockPanel>
         <!-- Player bottom buttons -->
         <DockPanel DockPanel.Dock="Bottom">
-            <Button DockPanel.Dock="Right" Content="Save Changes" Command="{Binding SaveChanges}"></Button>
+            <Button DockPanel.Dock="Right" Content="Save Playlist" Command="{Binding ButtonSavePlaylist}"></Button>
             <WrapPanel DockPanel.Dock="Left" HorizontalAlignment="Center">
                 <WrapPanel.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonIconStyle}">

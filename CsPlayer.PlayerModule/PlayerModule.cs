@@ -1,5 +1,6 @@
 ﻿using CsPlayer.PlayerModule.Views;
 using CsPlayer.Regions;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Practices.Unity;
 using Prism.Modularity;
 using Prism.Regions;
@@ -33,6 +34,7 @@ namespace CsPlayer.PlayerModule
 
         private void InitializeServices()
         {
+            this.container.RegisterInstance<IDialogCoordinator>(DialogCoordinator.Instance);
             this.container.RegisterType<object, Player>(nameof(Player));
         }
 

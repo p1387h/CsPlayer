@@ -61,6 +61,8 @@ namespace CsPlayer.PlayerModule.ViewModels
                     }));
                 Songs.CollectionChanged += this.SongCollectionChanged;
 
+                Name = _playlist.Name;
+
                 this.UpdatePlaylistTime();
                 this.UpdatePlaylistSongNumbers();
             }
