@@ -32,12 +32,18 @@ namespace CsPlayer.SongModule.ViewModels
             set { SetProperty<ObservableCollection<SongViewModel>>(ref _displayedSongs, value); }
         }
 
+        private string _songFilter;
+        public string SongFilter
+        {
+            get { return _songFilter; }
+            set { SetProperty<string>(ref _songFilter, value); }
+        }
+
         public ICommand ButtonClearAll { get; private set; }
         public ICommand ButtonClearInvalid { get; private set; }
         public ICommand ButtonCheckAll { get; private set; }
         public ICommand ButtonAddAll { get; private set; }
         public ICommand ButtonLoad { get; private set; }
-        public ICommand ButtonClearFilter { get; private set; }
 
         private IUnityContainer container;
         private IEventAggregator eventAggregator;
@@ -55,7 +61,6 @@ namespace CsPlayer.SongModule.ViewModels
             ButtonCheckAll = new DelegateCommand(this.ButtonCheckAllClicked);
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
-            ButtonClearFilter = new DelegateCommand(this.ButtonClearFilterClicked);
 
             this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
                 .Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
@@ -130,11 +135,6 @@ namespace CsPlayer.SongModule.ViewModels
                     DisplayedSongs.Add(viewModel);
                 }
             }
-        }
-
-        private void ButtonClearFilterClicked()
-        {
-            throw new NotImplementedException();
         }
     }
 }

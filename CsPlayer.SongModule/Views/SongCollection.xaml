@@ -8,14 +8,11 @@
              d:DesignHeight="450" d:DesignWidth="300"
              xmlns:prism="http://prismlibrary.com/"
              prism:ViewModelLocator.AutoWireViewModel="True"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:design="clr-namespace:CsPlayer.SongModule.Design"
              d:DataContext="{d:DesignInstance design:DesignSongCollectionViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
-        <!-- Custom TextBox additions -->
-        <Style TargetType="TextBox" BasedOn="{StaticResource MetroTextBox}">
-            <Setter Property="Margin" Value="0,0,10,0"></Setter>
-        </Style>
         <!-- Custom Button style for top level buttons -->
         <Style x:Key="ButtonTopStyle" TargetType="Button" BasedOn="{StaticResource MetroButton}">
             <Setter Property="Margin" Value="5,2,5,2"></Setter>
@@ -85,15 +82,12 @@
             </Button>
         </WrapPanel>
         <!-- Searchbar bottom -->
-        <DockPanel DockPanel.Dock="Bottom">
-            <Button DockPanel.Dock="Right" 
-                    Style="{StaticResource ButtonIconStyle}" 
-                    Margin="0,2,0,2"
-                    Command="{Binding ButtonClearFilter}">
-                <iconPacks:Material Kind="Close"></iconPacks:Material>
-            </Button>
-            <TextBox DockPanel.Dock="Left" Height="12"></TextBox>
-        </DockPanel>
+        <TextBox DockPanel.Dock="Bottom" 
+                 Height="12"
+                 Text="{Binding SongFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Controls:TextBoxHelper.Watermark="Search"
+                 Controls:TextBoxHelper.ClearTextButton="True">
+        </TextBox>
         <!-- Buttons above the List of songs / Drop area -->
         <DockPanel DockPanel.Dock="Top"
                    Margin="0,10,2,0">
