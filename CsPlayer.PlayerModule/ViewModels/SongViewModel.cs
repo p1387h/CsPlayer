@@ -181,7 +181,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         public void ButtonDeleteClicked()
         {
             this.eventAggregator.GetEvent<RemoveSongFromPlaylistEvent>()
-                .Publish(Song);
+                .Publish(SongNumber);
         }
     }
 }

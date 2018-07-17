@@ -123,9 +123,18 @@ namespace CsPlayer.PlayerModule.ViewModels
                 case NotifyCollectionChangedAction.Move:
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    var removedFilePaths = e.OldItems.OfType<SongViewModel>().Select(x => x.FilePath);
+                    var removedSongNumbers = e.OldItems
+                        .OfType<SongViewModel>()
+                        .Select(x => x.SongNumber)
+                        .ToList();
+                    removedSongNumbers.Sort();
+                    removedSongNumbers.Reverse();
 
-                    Playlist.Songs.RemoveAll(x => removedFilePaths.Contains(x.FilePath));
+                    // Reverse removal since the indices change.
+                    foreach (var number in removedSongNumbers)
+                    {
+                        Playlist.Songs.RemoveAt(number - 1);
+                    }
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     break;

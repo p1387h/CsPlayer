@@ -103,11 +103,9 @@ namespace CsPlayer.PlayerModule.ViewModels
             }
         }
 
-        private void RemoveSongFromPlaylist(Song song)
+        private void RemoveSongFromPlaylist(int songNumber)
         {
-            var toRemove = Playlist.Songs.FirstOrDefault(x => x.FilePath.Equals(song.FilePath));
-
-            Playlist.Songs.Remove(toRemove);
+            Playlist.Songs.RemoveAt(songNumber - 1);
         }
 
 
