@@ -73,7 +73,8 @@
                     <Grid DockPanel.Dock="Right">
                         <TextBlock VerticalAlignment="Center" 
                                    Margin="20,0,40,0" 
-                                   Text="{Binding TotalTime, Converter={StaticResource TimeSpanStringConverter}}">
+                                   Text="{Binding TotalTime, Converter={StaticResource TimeSpanStringConverter}}"
+                                   Style="{StaticResource TextBlockStyle}">
                         </TextBlock>
                         <Button VerticalAlignment="Top" 
                                 HorizontalAlignment="Right"
@@ -94,7 +95,8 @@
                     <!-- Index of song -->
                     <TextBlock DockPanel.Dock="Left" 
                                VerticalAlignment="Center"
-                               Text="{Binding SongNumber}">
+                               Text="{Binding SongNumber}"
+                               Style="{StaticResource TextBlockStyle}">
                     </TextBlock>
                     <!-- Name of song for non playing titles -->
                     <TextBlock DockPanel.Dock="Left" 
@@ -134,7 +136,8 @@
                         </Slider>
                         <TextBlock VerticalAlignment="Top" 
                                    Text="{Binding Name}"
-                                   TextWrapping="NoWrap">
+                                   TextWrapping="NoWrap"
+                                   Style="{StaticResource TextBlockStyle}">
                         </TextBlock>
                     </Grid>
                 </DockPanel>
@@ -144,6 +147,9 @@
     <DockPanel Background="White" Margin="10">
         <!-- Header information -->
         <DockPanel DockPanel.Dock="Top">
+            <DockPanel.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TextBlockStyle}"></Style>
+            </DockPanel.Resources>
             <TextBlock Width="40"
                        DockPanel.Dock="Left"
                        Text="{Binding Playlist.ActiveSongSongNumber, StringFormat={}{0} /}" 
