@@ -25,11 +25,13 @@
         </Grid.ColumnDefinitions>
         <Controls:MetroAnimatedSingleRowTabControl
             Grid.Column="0" 
+            SelectedIndex="0"
             prism:RegionManager.RegionName="{Binding Source={x:Static regions:RegionNames.TabRegion}}">
         </Controls:MetroAnimatedSingleRowTabControl>
-        <UserControl 
+        <Controls:TransitioningContentControl 
             Grid.Column="1" 
-            prism:RegionManager.RegionName="{Binding Source={x:Static regions:RegionNames.MainRegion}}">
-        </UserControl>
+            prism:RegionManager.RegionName="{Binding Source={x:Static regions:RegionNames.MainRegion}}"
+            Transition="Left">
+        </Controls:TransitioningContentControl>
     </Grid>
 </Controls:MetroWindow>
