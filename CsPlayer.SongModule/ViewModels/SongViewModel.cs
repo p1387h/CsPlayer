@@ -63,7 +63,8 @@ namespace CsPlayer.SongModule.ViewModels
 
         public void ButtonCheckClicked()
         {
-            throw new NotImplementedException();
+            Song.Verify();
+            Valid = Song.Valid;
         }
 
         public void ButtonDeleteClicked()

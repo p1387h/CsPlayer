@@ -1,5 +1,6 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
+using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Practices.Unity;
 using Microsoft.Win32;
 using Prism.Commands;
@@ -46,7 +47,7 @@ namespace CsPlayer.SongModule.ViewModels
 
                 IEnumerable<SongViewModel> newCollection = this.songs;
 
-                if(_songFilter.Any())
+                if (_songFilter.Any())
                 {
                     // Highly ineffective, but works.
                     newCollection = this.songs.Where(x => new Regex(value, RegexOptions.IgnoreCase).IsMatch(x.Name));
@@ -65,18 +66,21 @@ namespace CsPlayer.SongModule.ViewModels
 
         private IUnityContainer container;
         private IEventAggregator eventAggregator;
+        private IDialogCoordinator dialogCoordinator;
 
-        public SongCollectionViewModel(IUnityContainer container, IEventAggregator eventAggregator)
+        public SongCollectionViewModel(IUnityContainer container, IEventAggregator eventAggregator,
+            IDialogCoordinator dialogCoordinator)
         {
-            if (container == null || eventAggregator == null)
+            if (container == null || eventAggregator == null || dialogCoordinator == null)
                 throw new ArgumentException();
 
             this.container = container;
             this.eventAggregator = eventAggregator;
+            this.dialogCoordinator = dialogCoordinator;
 
             ButtonClearAll = new DelegateCommand(this.ButtonClearAllClicked);
             ButtonClearInvalid = new DelegateCommand(this.ButtonClearInvalidClicked);
-            ButtonCheckAll = new DelegateCommand(this.ButtonCheckAllClicked);
+            ButtonCheckAll = new DelegateCommand(async () => { await Task.Run(this.ButtonCheckAllClicked); });
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
 
@@ -87,7 +91,7 @@ namespace CsPlayer.SongModule.ViewModels
         private void UpdateSongIndices()
         {
             // Only the visible ones must be updated since they can be removed.
-            for(int i = 0; i < DisplayedSongs.Count; i++)
+            for (int i = 0; i < DisplayedSongs.Count; i++)
             {
                 DisplayedSongs[i].Index = i;
             }
@@ -104,7 +108,7 @@ namespace CsPlayer.SongModule.ViewModels
             this.UpdateSongIndices();
 
             // Reset view.
-            if(!DisplayedSongs.Any())
+            if (!DisplayedSongs.Any())
             {
                 DisplayedSongs = null;
             }
@@ -120,12 +124,25 @@ namespace CsPlayer.SongModule.ViewModels
 
         private void ButtonClearInvalidClicked()
         {
-            throw new NotImplementedException();
+            var newCollection = this.songs.Where(x => x.Valid);
+
+            DisplayedSongs = new ObservableCollection<SongViewModel>(newCollection);
+            this.songs = newCollection.ToList();
+            this.UpdateSongIndices();
         }
 
-        private void ButtonCheckAllClicked()
+        private async Task ButtonCheckAllClicked()
         {
-            throw new NotImplementedException();
+            var controller = await this.dialogCoordinator.ShowProgressAsync(this, "Song Check", "Checking songs...", false);
+
+            // Each song must be checked if the stored filelocation is still valid.
+            for (int i = 0; i < this.songs.Count; i++)
+            {
+                this.songs[i].Song.Verify();
+                controller.SetProgress((double)(i + 1) / (double)(this.songs.Count));
+            }
+
+            await controller.CloseAsync();
         }
 
         private void ButtonAddAllClicked()
@@ -155,7 +172,7 @@ namespace CsPlayer.SongModule.ViewModels
                     });
 
                 // Do not overwrite any existing / already loaded instances.
-                if(songViewModels.Any() && DisplayedSongs == null)
+                if (songViewModels.Any() && DisplayedSongs == null)
                 {
                     DisplayedSongs = new ObservableCollection<SongViewModel>();
                 }

@@ -149,7 +149,7 @@ namespace CsPlayer.PlayerModule.ViewModels
             ButtonDown = new DelegateCommand(this.ButtonDownClicked);
             ButtonDelete = new DelegateCommand(this.ButtonDeleteClicked);
 
-            // Timer for updating the 
+            // Timer for updating the Slider.
             this.timer.Tick += this.HandleTimerTick;
             this.timer.Interval = TimeSpan.FromSeconds(1);
         }
