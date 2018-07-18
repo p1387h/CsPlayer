@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace CsPlayer.SongModule.ViewModels
 {
@@ -80,9 +81,9 @@ namespace CsPlayer.SongModule.ViewModels
 
             ButtonClearAll = new DelegateCommand(this.ButtonClearAllClicked);
             ButtonClearInvalid = new DelegateCommand(this.ButtonClearInvalidClicked);
-            ButtonCheckAll = new DelegateCommand(async () => { await Task.Run(this.ButtonCheckAllClicked); });
+            ButtonCheckAll = new DelegateCommand(async () => { await this.ButtonCheckAllClicked(); });
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
-            ButtonLoad = new DelegateCommand(this.ButtonLoadClicked);
+            ButtonLoad = new DelegateCommand(async () => { await this.ButtonLoadClicked(); });
 
             this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
                 .Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
@@ -133,14 +134,23 @@ namespace CsPlayer.SongModule.ViewModels
 
         private async Task ButtonCheckAllClicked()
         {
-            var controller = await this.dialogCoordinator.ShowProgressAsync(this, "Song Check", "Checking songs...", false);
+            var message = "Checking songs...";
+            var controller = await this.dialogCoordinator.ShowProgressAsync(this, "Song Check", message, false);
+            controller.Maximum = this.songs.Count;
+            controller.Minimum = 0;
 
-            // Each song must be checked if the stored filelocation is still valid.
-            for (int i = 0; i < this.songs.Count; i++)
-            {
-                this.songs[i].Song.Verify();
-                controller.SetProgress((double)(i + 1) / (double)(this.songs.Count));
-            }
+            // A separate Task is needed in order for the progress bar content
+            // to be drawn. Otherwise only a blank, grey overlay is shown.
+            await Task.Run(() => {
+                for (int i = 0; i < this.songs.Count; i++)
+                {
+                    var currentCount = i + 1;
+                    this.songs[i].Song.Verify();
+
+                    controller.SetProgress((double)(i + 1));
+                    controller.SetMessage(String.Format("{0} ({1}/{2})", message, currentCount, this.songs.Count));
+                }
+            });
 
             await controller.CloseAsync();
         }
@@ -151,17 +161,28 @@ namespace CsPlayer.SongModule.ViewModels
                 .Publish(this.DisplayedSongs.Select(x => x.Song).ToList());
         }
 
-        private void ButtonLoadClicked()
+        private async Task ButtonLoadClicked()
         {
-            var fileDialog = new OpenFileDialog()
+            var dialogSettings = new OpenFileDialog()
             {
                 Multiselect = true,
                 Filter = "MP3 files |*.mp3"
             };
 
-            if (fileDialog.ShowDialog() ?? false)
+            await this.LoadSongsAsync(dialogSettings);
+
+            this.UpdateSongIndices();
+        }
+
+        private async Task<bool> LoadSongsAsync(OpenFileDialog dialogSettings)
+        {
+            var success = dialogSettings.ShowDialog() ?? false;
+
+            if (success)
             {
-                var files = fileDialog.FileNames;
+                var message = "Loading songs...";
+                var files = dialogSettings.FileNames;
+                var fileCount = files.Count();
                 var songViewModels = files
                     .Select(x => new Song(x))
                     .Select(x =>
@@ -170,20 +191,44 @@ namespace CsPlayer.SongModule.ViewModels
                         viewModel.Song = x;
                         return viewModel;
                     });
+                var enumerator = songViewModels.GetEnumerator();
+                var viewModelCollection = DisplayedSongs;
+                var uiDispatcher = Dispatcher.CurrentDispatcher;
 
-                // Do not overwrite any existing / already loaded instances.
+                var controller = await this.dialogCoordinator.ShowProgressAsync(this, "Load Songs", message, false);
+                controller.Maximum = fileCount;
+                controller.Minimum = 0;
+
+                // Do not overwrite any existing / already loaded instances but
+                // keep the reference since it is needed for the Task's context.
                 if (songViewModels.Any() && DisplayedSongs == null)
                 {
-                    DisplayedSongs = new ObservableCollection<SongViewModel>();
+                    viewModelCollection = new ObservableCollection<SongViewModel>();
+                    uiDispatcher.Invoke(() => { DisplayedSongs = viewModelCollection; });
                 }
 
-                foreach (var viewModel in songViewModels)
+                // A separate Task is needed in order for the progress bar content
+                // to be drawn. Otherwise only a blank, grey overlay is shown.
+                await Task.Run(() =>
                 {
-                    DisplayedSongs.Add(viewModel);
-                    this.songs.Add(viewModel);
-                    this.UpdateSongIndices();
-                }
+                    for (int i = 0; i < fileCount; i++)
+                    {
+                        enumerator.MoveNext();
+                        var viewModel = enumerator.Current;
+                        var currentCount = i + 1;
+
+                        uiDispatcher.Invoke(() => { DisplayedSongs.Add(viewModel); });
+                        this.songs.Add(viewModel);
+
+                        controller.SetProgress(currentCount);
+                        controller.SetMessage(String.Format("{0} ({1}/{2})", message, currentCount, fileCount));
+                    }
+                });
+
+                await controller.CloseAsync();
             }
+
+            return success;
         }
     }
 }
