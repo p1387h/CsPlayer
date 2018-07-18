@@ -53,7 +53,6 @@ namespace CsPlayer.PlayerModule.ViewModels
             this.dialogCoordinator = dialogCoordinator;
 
             Playlist = this.container.Resolve<PlaylistViewModel>();
-            Playlist.Playlist = new Playlist("");
 
             ButtonPrevious = new DelegateCommand(this.ButtonPreviousClicked);
             ButtonPlay = new DelegateCommand(this.ButtonPlayClicked);
@@ -63,7 +62,7 @@ namespace CsPlayer.PlayerModule.ViewModels
             ButtonSavePlaylist = new DelegateCommand(async () => { await Task.Run(this.ButtonSavePlaylistClicked); });
 
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
-                .Subscribe(this.AddSongsToPlaylist, ThreadOption.UIThread);
+                .Subscribe(async (songs) => { await this.AddSongsToPlaylistAsync(songs); }, ThreadOption.UIThread);
             this.eventAggregator.GetEvent<RemoveSongFromPlaylistEvent>()
                 .Subscribe(this.RemoveSongFromPlaylist, ThreadOption.UIThread);
 
@@ -100,12 +99,12 @@ namespace CsPlayer.PlayerModule.ViewModels
 
 
         // ---------- EventAggregator
-        private void AddSongsToPlaylist(List<Song> songs)
+        private async Task AddSongsToPlaylistAsync(List<Song> songs)
         {
-            var viewModelsToAdd = songs.Select(x =>
+            var viewModelsToAdd = songs.Select(async x =>
                 {
                     var viewModel = this.container.Resolve<SongViewModel>();
-                    viewModel.Song = x;
+                    await viewModel.SetSongAsync(x);
                     return viewModel;
                 });
 
@@ -117,14 +116,14 @@ namespace CsPlayer.PlayerModule.ViewModels
 
                 foreach (var vm in vmList)
                 {
-                    Playlist.Songs.Insert(Playlist.SelectedSong.SongNumber, vm);
+                    Playlist.Songs.Insert(Playlist.SelectedSong.SongNumber, await vm);
                 }
             }
             else
             {
                 foreach (var vm in viewModelsToAdd)
                 {
-                    Playlist.Songs.Add(vm);
+                    Playlist.Songs.Add(await vm);
                 }
             }
         }

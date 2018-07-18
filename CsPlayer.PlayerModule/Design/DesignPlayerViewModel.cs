@@ -38,7 +38,7 @@ namespace CsPlayer.PlayerModule.Design
             playlistModel.Songs.Add(new Song(@"C:\User\Desktop\Files\Music\Songs\TestSongs\InvalidSongs\TestSongTwo.mp3", false));
 
             var viewModel = container.Resolve<PlaylistViewModel>();
-            viewModel.Playlist = playlistModel;
+            viewModel.SetPlaylist(playlistModel);
 
             // List of songs:
             Playlist = viewModel;

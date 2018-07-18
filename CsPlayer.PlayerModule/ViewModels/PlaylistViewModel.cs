@@ -11,6 +11,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace CsPlayer.PlayerModule.ViewModels
 {
@@ -47,25 +48,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         internal Playlist Playlist
         {
             get { return _playlist; }
-            set
-            {
-                _playlist = value;
-
-                // Wrap the references in view model ones.
-                Songs = new ObservableCollection<SongViewModel>();
-                Songs.AddRange(_playlist.Songs.Select(x =>
-                    {
-                        var viewModel = this.container.Resolve<SongViewModel>();
-                        viewModel.Song = x;
-                        return viewModel;
-                    }));
-                Songs.CollectionChanged += this.SongCollectionChanged;
-
-                Name = _playlist.Name;
-
-                this.UpdatePlaylistTime();
-                this.UpdatePlaylistSongNumbers();
-            }
+            private set { _playlist = value; }
         }
 
         private int _activeSongSongNumber = 0;
@@ -114,8 +97,40 @@ namespace CsPlayer.PlayerModule.ViewModels
             this.container = container;
             this.eventAggregator = eventAggregator;
 
+            this.SetPlaylist(new Playlist(""));
+
             this.eventAggregator.GetEvent<MoveSongInPlaylistEvent>()
                 .Subscribe(this.MoveSongInPlaylist, ThreadOption.UIThread);
+        }
+
+        internal void SetPlaylist(Playlist playlist)
+        {
+            Songs = new ObservableCollection<SongViewModel>();
+            Playlist = playlist;
+            var viewModels = playlist.Songs.Select(x =>
+                {
+                    var viewModel = this.container.Resolve<SongViewModel>();
+                    viewModel.SetSong(x);
+                    return viewModel;
+                });
+
+            foreach (var viewModel in viewModels)
+            {
+                Dispatcher.CurrentDispatcher.Invoke(() => { Songs.Add(viewModel); });
+            }
+
+            // Subscribe after adding the wrappers to prevent inserting a second instance
+            // of the song into the model playlist.
+            Songs.CollectionChanged += this.SongCollectionChanged;
+            Dispatcher.CurrentDispatcher.Invoke(() => { Name = playlist.Name; });
+
+            this.UpdatePlaylistTime();
+            this.UpdatePlaylistSongNumbers();
+        }
+
+        internal async Task SetPlaylistAsync(Playlist playlist)
+        {
+            await Task.Run(() => { SetPlaylist(playlist); });
         }
 
         private void SongCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

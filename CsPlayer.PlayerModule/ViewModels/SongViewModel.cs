@@ -102,30 +102,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         internal Song Song
         {
             get { return _song; }
-            set
-            {
-                _song = value;
-
-                try
-                {
-                    // Prevent exceptions by testing the existence of the file itself.
-                    // DesignMode must be checked since the FileReader must not load
-                    // design data.
-                    if (_song != null && _song.Valid && !DesignModeChecker.IsInDesignMode())
-                    {
-                        Mp3Reader = new Mp3FileReader(_song.FilePath);
-                        TotalTime = Mp3Reader.TotalTime;
-                    }
-                }
-                catch (DirectoryNotFoundException e)
-                {
-                    this.logger.Log(e.Message, Category.Exception, Priority.High);
-                }
-                catch (FileNotFoundException e)
-                {
-                    this.logger.Log(e.Message, Category.Exception, Priority.High);
-                }
-            }
+            private set { _song = value; }
         }
 
         // DispatcherTimer since updating the UI regarding the current time of the
@@ -164,6 +141,36 @@ namespace CsPlayer.PlayerModule.ViewModels
                 CurrentTime = Mp3Reader.CurrentTime;
                 this.isTimerTickSetter = false;
             }
+        }
+
+        internal void SetSong(Song song)
+        {
+            try
+            {
+                Song = song;
+
+                // Prevent exceptions by testing the existence of the file itself.
+                // DesignMode must be checked since the FileReader must not load
+                // design data.
+                if (song != null && song.Valid && !DesignModeChecker.IsInDesignMode())
+                {
+                    Mp3Reader = new Mp3FileReader(song.FilePath);
+                    Dispatcher.CurrentDispatcher.Invoke(() => { TotalTime = Mp3Reader.TotalTime; });
+                }
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                this.logger.Log(e.Message, Category.Exception, Priority.High);
+            }
+            catch (FileNotFoundException e)
+            {
+                this.logger.Log(e.Message, Category.Exception, Priority.High);
+            }
+        }
+
+        internal async Task SetSongAsync(Song song)
+        {
+            await Task.Run(() => SetSong(song));
         }
 
 
