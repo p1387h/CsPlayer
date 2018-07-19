@@ -86,7 +86,7 @@
         <!-- Searchbar bottom -->
         <TextBox DockPanel.Dock="Bottom" 
                  Height="12"
-                 Text="{Binding SongFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Text="{Binding SongFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
                  Controls:TextBoxHelper.Watermark="Search"
                  Controls:TextBoxHelper.ClearTextButton="True">
         </TextBox>

@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -42,21 +40,7 @@ namespace CsPlayer.SongModule.ViewModels
         public string SongFilter
         {
             get { return _songFilter; }
-            set
-            {
-                SetProperty<string>(ref _songFilter, value);
-
-                IEnumerable<SongViewModel> newCollection = this.songs;
-
-                if (_songFilter.Any())
-                {
-                    // Highly ineffective, but works.
-                    newCollection = this.songs.Where(x => new Regex(value, RegexOptions.IgnoreCase).IsMatch(x.Name));
-                }
-
-                DisplayedSongs = new ObservableCollection<SongViewModel>(newCollection);
-                this.UpdateSongIndices();
-            }
+            set { SetProperty<string>(ref _songFilter, value); }
         }
 
         public ICommand ButtonClearAll { get; private set; }
@@ -141,11 +125,12 @@ namespace CsPlayer.SongModule.ViewModels
 
             // A separate Task is needed in order for the progress bar content
             // to be drawn. Otherwise only a blank, grey overlay is shown.
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 for (int i = 0; i < this.songs.Count; i++)
                 {
                     var currentCount = i + 1;
-                    this.songs[i].Song.Verify();
+                    this.songs[i].Verify();
 
                     controller.SetProgress((double)(i + 1));
                     controller.SetMessage(String.Format("{0} ({1}/{2})", message, currentCount, this.songs.Count));
@@ -192,19 +177,16 @@ namespace CsPlayer.SongModule.ViewModels
                         return viewModel;
                     });
                 var enumerator = songViewModels.GetEnumerator();
-                var viewModelCollection = DisplayedSongs;
                 var uiDispatcher = Dispatcher.CurrentDispatcher;
 
                 var controller = await this.dialogCoordinator.ShowProgressAsync(this, "Load Songs", message, false);
                 controller.Maximum = fileCount;
                 controller.Minimum = 0;
 
-                // Do not overwrite any existing / already loaded instances but
-                // keep the reference since it is needed for the Task's context.
+                // Do not overwrite any existing / already loaded instances.
                 if (songViewModels.Any() && DisplayedSongs == null)
                 {
-                    viewModelCollection = new ObservableCollection<SongViewModel>();
-                    uiDispatcher.Invoke(() => { DisplayedSongs = viewModelCollection; });
+                    DisplayedSongs = new ObservableCollection<SongViewModel>();
                 }
 
                 // A separate Task is needed in order for the progress bar content

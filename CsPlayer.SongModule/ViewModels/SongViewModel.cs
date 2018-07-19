@@ -53,6 +53,12 @@ namespace CsPlayer.SongModule.ViewModels
             ButtonDelete = new DelegateCommand(this.ButtonDeleteClicked);
         }
 
+        public void Verify()
+        {
+            Song.Verify();
+            this.RaisePropertyChanged(nameof(Valid));
+        }
+
 
         // ---------- Buttons
         public void ButtonAddClicked()

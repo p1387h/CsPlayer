@@ -59,7 +59,7 @@ namespace CsPlayer.PlayerModule.ViewModels
             ButtonPause = new DelegateCommand(this.ButtonPauseClicked);
             ButtonStop = new DelegateCommand(this.ButtonStopClicked);
             ButtonNext = new DelegateCommand(this.ButtonNextClicked);
-            ButtonSavePlaylist = new DelegateCommand(async () => { await Task.Run(this.ButtonSavePlaylistClicked); });
+            ButtonSavePlaylist = new DelegateCommand(async () => { await this.ButtonSavePlaylistClicked(); });
 
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
                 .Subscribe(async (songs) => { await this.AddSongsToPlaylistAsync(songs); }, ThreadOption.UIThread);

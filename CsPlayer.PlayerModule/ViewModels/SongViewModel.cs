@@ -155,7 +155,7 @@ namespace CsPlayer.PlayerModule.ViewModels
                 if (song != null && song.Valid && !DesignModeChecker.IsInDesignMode())
                 {
                     Mp3Reader = new Mp3FileReader(song.FilePath);
-                    Dispatcher.CurrentDispatcher.Invoke(() => { TotalTime = Mp3Reader.TotalTime; });
+                    TotalTime = Mp3Reader.TotalTime;
                 }
             }
             catch (DirectoryNotFoundException e)
@@ -170,7 +170,13 @@ namespace CsPlayer.PlayerModule.ViewModels
 
         internal async Task SetSongAsync(Song song)
         {
-            await Task.Run(() => SetSong(song));
+            await Task.Run(() => this.SetSong(song));
+        }
+
+        public void Verify()
+        {
+            Song.Verify();
+            this.RaisePropertyChanged(nameof(Valid));
         }
 
 

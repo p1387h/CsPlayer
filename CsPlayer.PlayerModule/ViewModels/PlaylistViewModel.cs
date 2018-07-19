@@ -9,9 +9,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Threading;
 
 namespace CsPlayer.PlayerModule.ViewModels
 {
@@ -116,21 +113,16 @@ namespace CsPlayer.PlayerModule.ViewModels
 
             foreach (var viewModel in viewModels)
             {
-                Dispatcher.CurrentDispatcher.Invoke(() => { Songs.Add(viewModel); });
+               Songs.Add(viewModel);
             }
 
             // Subscribe after adding the wrappers to prevent inserting a second instance
             // of the song into the model playlist.
             Songs.CollectionChanged += this.SongCollectionChanged;
-            Dispatcher.CurrentDispatcher.Invoke(() => { Name = playlist.Name; });
+            Name = playlist.Name;
 
             this.UpdatePlaylistTime();
             this.UpdatePlaylistSongNumbers();
-        }
-
-        internal async Task SetPlaylistAsync(Playlist playlist)
-        {
-            await Task.Run(() => { SetPlaylist(playlist); });
         }
 
         private void SongCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
