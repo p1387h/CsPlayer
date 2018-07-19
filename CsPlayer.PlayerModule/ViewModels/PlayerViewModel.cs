@@ -31,6 +31,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonStop { get; private set; }
         public ICommand ButtonNext { get; private set; }
         public ICommand ButtonSavePlaylist { get; private set; }
+        public ICommand ButtonClearPlaylist { get; private set; }
 
         // The player itself.
         private WaveOut waveOut = new WaveOut();
@@ -60,6 +61,7 @@ namespace CsPlayer.PlayerModule.ViewModels
             ButtonStop = new DelegateCommand(this.ButtonStopClicked);
             ButtonNext = new DelegateCommand(this.ButtonNextClicked);
             ButtonSavePlaylist = new DelegateCommand(async () => { await this.ButtonSavePlaylistClicked(); });
+            ButtonClearPlaylist = new DelegateCommand(this.ButtonClearPlaylistClicked);
 
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
                 .Subscribe(async (songs) => { await this.AddSongsToPlaylistAsync(songs); }, ThreadOption.UIThread);
@@ -220,6 +222,12 @@ namespace CsPlayer.PlayerModule.ViewModels
                         notificationSettings);
                 }
             }
+        }
+
+        private void ButtonClearPlaylistClicked()
+        {
+            ButtonStopClicked();
+            Playlist.Songs.Clear();
         }
     }
 }

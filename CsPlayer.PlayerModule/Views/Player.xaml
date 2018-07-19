@@ -166,7 +166,12 @@
                        DockPanel.Dock="Left" 
                        Text="{Binding Playlist.SongCount, StringFormat={} {0}}">
             </TextBlock>
-            <TextBlock Margin="20,0,42,0" 
+            <Button DockPanel.Dock="Right"
+                    Style="{StaticResource ButtonIconStyle}"
+                    Command="{Binding ButtonClearPlaylist}">
+                <iconPacks:PackIconMaterial Kind="Close"></iconPacks:PackIconMaterial>
+            </Button>
+            <TextBlock Margin="20,0,12,0" 
                        DockPanel.Dock="Right" 
                        Text="{Binding Playlist.TotalTime, Converter={StaticResource TimeSpanStringConverter}}">
             </TextBlock>
