@@ -113,7 +113,7 @@ namespace CsPlayer.PlayerModule.ViewModels
 
             foreach (var viewModel in viewModels)
             {
-               Songs.Add(viewModel);
+                Songs.Add(viewModel);
             }
 
             // Subscribe after adding the wrappers to prevent inserting a second instance
@@ -164,10 +164,14 @@ namespace CsPlayer.PlayerModule.ViewModels
         {
             if (Songs.Any())
             {
-                TotalTime = Songs
-                    .Where(x => x.Valid)
-                    .Select(x => x.TotalTime)
-                    .Aggregate((total, x) => total.Add(x));
+                var valids = Songs.Where(x => x.Valid);
+
+                if (valids.Any())
+                {
+                    TotalTime = valids
+                        .Select(x => x.TotalTime)
+                        .Aggregate((total, x) => total.Add(x));
+                }
             }
             else
             {

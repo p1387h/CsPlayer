@@ -149,12 +149,15 @@ namespace CsPlayer.PlayerModule.ViewModels
             {
                 Song = song;
 
+                // Make sure the check was performed before trying to load it.
+                Song.Verify();
+
                 // Prevent exceptions by testing the existence of the file itself.
                 // DesignMode must be checked since the FileReader must not load
                 // design data.
-                if (song != null && song.Valid && !DesignModeChecker.IsInDesignMode())
+                if (Song != null && Song.Valid && !DesignModeChecker.IsInDesignMode())
                 {
-                    Mp3Reader = new Mp3FileReader(song.FilePath);
+                    Mp3Reader = new Mp3FileReader(Song.FilePath);
                     TotalTime = Mp3Reader.TotalTime;
                 }
             }
@@ -171,12 +174,6 @@ namespace CsPlayer.PlayerModule.ViewModels
         internal async Task SetSongAsync(Song song)
         {
             await Task.Run(() => this.SetSong(song));
-        }
-
-        public void Verify()
-        {
-            Song.Verify();
-            this.RaisePropertyChanged(nameof(Valid));
         }
 
 
