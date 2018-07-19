@@ -1,5 +1,6 @@
 ﻿using CsPlayer.PlayerEvents;
 using CsPlayer.Shared;
+using GongSolutions.Wpf.DragDrop;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Practices.Unity;
 using Microsoft.Win32;
@@ -9,16 +10,19 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace CsPlayer.SongModule.ViewModels
 {
-    class SongCollectionViewModel : BindableBase
+    class SongCollectionViewModel : BindableBase, IDropTarget
     {
         // Header is displayed in the tab control.
         private string _header = "Songs";
@@ -89,6 +93,18 @@ namespace CsPlayer.SongModule.ViewModels
             }
         }
 
+        private IEnumerable<SongViewModel> GenerateSongViewModels(IEnumerable<string> files)
+        {
+            return files
+                .Select(x => new Song(x))
+                .Select(x =>
+                {
+                    var viewModel = this.container.Resolve<SongViewModel>();
+                    viewModel.Song = x;
+                    return viewModel;
+                });
+        }
+
 
         // ---------- EventAggregator
         private void RemoveSongFromSongList(int index)
@@ -103,6 +119,53 @@ namespace CsPlayer.SongModule.ViewModels
             if (!DisplayedSongs.Any())
             {
                 DisplayedSongs = null;
+            }
+        }
+
+        // ---------- Drag / Drop
+        public void DragOver(IDropInfo dropInfo)
+        {
+            var files = (dropInfo.Data as DataObject)?.GetFileDropList().Cast<string>();
+
+            if (files != null && files.Any(x => Path.GetExtension(x).Equals(".mp3")))
+            {
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                dropInfo.Effects = DragDropEffects.None;
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            var files = (dropInfo.Data as DataObject)?.GetFileDropList().Cast<string>();
+            dropInfo.Effects = DragDropEffects.None;
+
+            if (files != null)
+            {
+                var mp3s = files.Where(x => Path.GetExtension(x).Equals(".mp3"));
+                
+                if(mp3s.Any()) {
+                    var songViewModels = this.GenerateSongViewModels(mp3s);
+
+                    // Do not overwrite any existing / already loaded instances.
+                    if (songViewModels.Any() && DisplayedSongs == null)
+                    {
+                        DisplayedSongs = new ObservableCollection<SongViewModel>();
+                    }
+
+                    // Convert the file paths into view models like the "normal"
+                    // loading does as well.
+                    foreach (var song in songViewModels)
+                    {
+                        DisplayedSongs.Add(song);
+                        this.songs.Add(song);
+                    }
+                    this.UpdateSongIndices();
+
+                    dropInfo.Effects = DragDropEffects.Copy;
+                }
             }
         }
 
@@ -175,14 +238,7 @@ namespace CsPlayer.SongModule.ViewModels
                 var message = "Loading songs...";
                 var files = dialogSettings.FileNames;
                 var fileCount = files.Count();
-                var songViewModels = files
-                    .Select(x => new Song(x))
-                    .Select(x =>
-                    {
-                        var viewModel = this.container.Resolve<SongViewModel>();
-                        viewModel.Song = x;
-                        return viewModel;
-                    });
+                var songViewModels = this.GenerateSongViewModels(files);
                 var enumerator = songViewModels.GetEnumerator();
                 var uiDispatcher = Dispatcher.CurrentDispatcher;
 
