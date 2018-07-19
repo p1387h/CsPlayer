@@ -15,14 +15,18 @@
              xmlns:design="clr-namespace:CsPlayer.SongModule.Design"
              d:DataContext="{d:DesignInstance design:DesignSongCollectionViewModel, IsDesignTimeCreatable=True}">
     <UserControl.Resources>
+        <!-- Custom base Button style -->
+        <Style x:Key="ButtonStyle" TargetType="Button" BasedOn="{StaticResource SquareButtonStyle}">
+
+        </Style>
         <!-- Custom Button style for top level buttons -->
-        <Style x:Key="ButtonTopStyle" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+        <Style x:Key="ButtonTopStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyle}">
             <Setter Property="Margin" Value="5,2,5,2"></Setter>
             <Setter Property="Padding" Value="5,2,5,2"></Setter>
             <Setter Property="MinWidth" Value="100"></Setter>
         </Style>
         <!-- Custom Button style for icons -->
-        <Style x:Key="ButtonIconStyle" TargetType="Button" BasedOn="{StaticResource MetroButton}">
+        <Style x:Key="ButtonIconStyle" TargetType="Button" BasedOn="{StaticResource AccentedSquareButtonStyle}">
             <Setter Property="MinWidth" Value="27"></Setter>
             <Setter Property="MinHeight" Value="27"></Setter>
             <Setter Property="Width" Value="27"></Setter>
