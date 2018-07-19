@@ -88,7 +88,9 @@
                  Height="12"
                  Text="{Binding SongFilter, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
                  Controls:TextBoxHelper.Watermark="Search"
-                 Controls:TextBoxHelper.ClearTextButton="True">
+                 Controls:TextBoxHelper.ClearTextButton="True"
+                 Controls:TextBoxHelper.ButtonCommand="{Binding ButtonFilter}"
+                 Controls:TextBoxHelper.ButtonContent="s">
         </TextBox>
         <!-- Buttons above the List of songs / Drop area -->
         <DockPanel DockPanel.Dock="Top"

@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -48,6 +50,7 @@ namespace CsPlayer.SongModule.ViewModels
         public ICommand ButtonCheckAll { get; private set; }
         public ICommand ButtonAddAll { get; private set; }
         public ICommand ButtonLoad { get; private set; }
+        public ICommand ButtonFilter { get; private set; }
 
         private IUnityContainer container;
         private IEventAggregator eventAggregator;
@@ -68,6 +71,7 @@ namespace CsPlayer.SongModule.ViewModels
             ButtonCheckAll = new DelegateCommand(async () => { await this.ButtonCheckAllClicked(); });
             ButtonAddAll = new DelegateCommand(this.ButtonAddAllClicked);
             ButtonLoad = new DelegateCommand(async () => { await this.ButtonLoadClicked(); });
+            ButtonFilter = new DelegateCommand(async () => { await this.ButtonFilterClicked(); });
 
             this.eventAggregator.GetEvent<RemoveSongFromSongListEvent>()
                 .Subscribe(this.RemoveSongFromSongList, ThreadOption.UIThread);
@@ -75,10 +79,13 @@ namespace CsPlayer.SongModule.ViewModels
 
         private void UpdateSongIndices()
         {
-            // Only the visible ones must be updated since they can be removed.
-            for (int i = 0; i < DisplayedSongs.Count; i++)
+            if (DisplayedSongs != null)
             {
-                DisplayedSongs[i].Index = i;
+                // Only the visible ones must be updated since they can be removed.
+                for (int i = 0; i < DisplayedSongs.Count; i++)
+                {
+                    DisplayedSongs[i].Index = i;
+                }
             }
         }
 
@@ -211,6 +218,72 @@ namespace CsPlayer.SongModule.ViewModels
             }
 
             return success;
+        }
+
+        private async Task ButtonFilterClicked()
+        {
+            if (this.songs.Any() && DisplayedSongs != null)
+            {
+                var regex = new Regex(SongFilter, RegexOptions.IgnoreCase);
+                var controller = await this.dialogCoordinator.ShowProgressAsync(this, "Filter Songs", "Filtering...", false);
+
+                await this.RemoveFilterEntriesAsync(regex, controller);
+                await this.AddFilteredEntriesAsync(regex, controller);
+
+                await controller.CloseAsync();
+            }
+        }
+
+        private async Task RemoveFilterEntriesAsync(Regex regex, ProgressDialogController controller)
+        {
+            var removeMessage = "Removing entry...";
+
+            await Task.Run(() =>
+            {
+                var toRemove = DisplayedSongs
+                    .Where(x => !regex.IsMatch(x.Name))
+                    .ToList();
+
+                controller.Minimum = 0;
+                controller.Maximum = toRemove.Count;
+
+                for (int i = 0; i < toRemove.Count; i++)
+                {
+                    var currentItemNumber = i + 1;
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        DisplayedSongs.Remove(toRemove[i]);
+                    });
+
+                    controller.SetProgress(currentItemNumber);
+                    controller.SetMessage(String.Format("{0} ({1}/{2})", removeMessage, currentItemNumber, toRemove.Count));
+                }
+            });
+        }
+
+        private async Task AddFilteredEntriesAsync(Regex regex, ProgressDialogController controller)
+        {
+            var addMessage = "Adding entry...";
+
+            await Task.Run(() =>
+            {
+                var toAdd = this.songs
+                    .Except(DisplayedSongs)
+                    .Where(x => regex.IsMatch(x.Name))
+                    .ToList();
+
+                controller.SetMessage(String.Format("{0} ({1})", addMessage, toAdd.Count));
+                controller.Minimum = 0;
+                controller.Maximum = 1;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    DisplayedSongs.AddRange(toAdd);
+                });
+
+                controller.SetProgress(1);
+            });
         }
     }
 }
