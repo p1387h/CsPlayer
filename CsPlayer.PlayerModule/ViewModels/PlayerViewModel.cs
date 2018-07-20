@@ -33,7 +33,6 @@ namespace CsPlayer.PlayerModule.ViewModels
         public ICommand ButtonPause { get; private set; }
         public ICommand ButtonStop { get; private set; }
         public ICommand ButtonNext { get; private set; }
-        public ICommand ButtonSavePlaylist { get; private set; }
         public ICommand ButtonClearPlaylist { get; private set; }
 
         // The player itself.
@@ -63,7 +62,6 @@ namespace CsPlayer.PlayerModule.ViewModels
             ButtonPause = new DelegateCommand(this.ButtonPauseClicked);
             ButtonStop = new DelegateCommand(this.ButtonStopClicked);
             ButtonNext = new DelegateCommand(this.ButtonNextClicked);
-            ButtonSavePlaylist = new DelegateCommand(async () => { await this.ButtonSavePlaylistClicked(); });
             ButtonClearPlaylist = new DelegateCommand(this.ButtonClearPlaylistClicked);
 
             this.eventAggregator.GetEvent<AddSongsToPlaylistEvent>()
@@ -288,44 +286,6 @@ namespace CsPlayer.PlayerModule.ViewModels
             this.ResetWaveOut();
             Playlist.MoveToNextSong();
             this.ButtonPlayClicked();
-        }
-
-        private async Task ButtonSavePlaylistClicked()
-        {
-            var saveSettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "Save",
-                NegativeButtonText = "Cancel",
-                DefaultButtonFocus = MessageDialogResult.Affirmative,
-                AnimateHide = false
-            };
-            var notificationSettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "OK",
-                DefaultButtonFocus = MessageDialogResult.Affirmative
-            };
-            var name = await this.dialogCoordinator.ShowInputAsync(this, "Save Playlist", 
-                "Enter the name of the playlist.", saveSettings);
-
-            // Null means the user aborted the save.
-            if (name != null)
-            {
-                // Empty meand the user did not enter any name.
-                if (name.Equals(String.Empty))
-                {
-                    await this.dialogCoordinator.ShowMessageAsync(this, "Save Playlist", 
-                        "The playlist requires a name!", MessageDialogStyle.Affirmative, 
-                        notificationSettings);
-                }
-                else
-                {
-                    this.eventAggregator.GetEvent<SavePlaylistEvent>()
-                        .Publish(this.Playlist.Playlist);
-                    await this.dialogCoordinator.ShowMessageAsync(this, "Save Playlist",
-                        "Saving successfull", MessageDialogStyle.Affirmative,
-                        notificationSettings);
-                }
-            }
         }
 
         private void ButtonClearPlaylistClicked()

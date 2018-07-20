@@ -184,11 +184,6 @@
         </DockPanel>
         <!-- Player bottom buttons -->
         <DockPanel DockPanel.Dock="Bottom">
-            <Button DockPanel.Dock="Right" 
-                    Content="Save Playlist" 
-                    Command="{Binding ButtonSavePlaylist}"
-                    Style="{StaticResource ButtonStyle}">
-            </Button>
             <WrapPanel DockPanel.Dock="Left" HorizontalAlignment="Center">
                 <WrapPanel.Resources>
                     <Style TargetType="Button" BasedOn="{StaticResource ButtonIconStyle}">
