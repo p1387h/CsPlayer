@@ -18,7 +18,7 @@ using System.Windows.Threading;
 
 namespace CsPlayer.PlayerModule.ViewModels
 {
-    class SongViewModel : BindableBase
+    class SongViewModel : BindableBase, ISong
     {
         public string Name
         {
@@ -33,7 +33,7 @@ namespace CsPlayer.PlayerModule.ViewModels
         public bool Valid
         {
             get { return Song.Valid; }
-            private set
+            set
             {
                 Song.Valid = value;
                 this.RaisePropertyChanged(nameof(Valid));

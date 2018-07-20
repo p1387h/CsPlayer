@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CsPlayer.Shared
 {
-    public class Playlist
+    public class Playlist : IPlaylist
     {
         public string Name { get; set; }
         public bool Valid { get; set; }

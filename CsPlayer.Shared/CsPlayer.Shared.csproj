@@ -40,6 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPlaylist.cs" />
+    <Compile Include="ISong.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Song.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

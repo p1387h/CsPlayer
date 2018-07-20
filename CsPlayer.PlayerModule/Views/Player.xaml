@@ -13,7 +13,8 @@
              Dialog:DialogParticipation.Register="{Binding}"
              xmlns:design="clr-namespace:CsPlayer.PlayerModule.Design"
              xmlns:converter="clr-namespace:CsPlayer.PlayerModule.Converter"
-             d:DataContext="{d:DesignInstance design:DesignPlayerViewModel, IsDesignTimeCreatable=True}">
+             d:DataContext="{d:DesignInstance design:DesignPlayerViewModel, IsDesignTimeCreatable=True}"
+             xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop">
     <UserControl.Resources>
         <converter:TimeSpanToStringConverter x:Key="TimeSpanStringConverter"></converter:TimeSpanToStringConverter>
         <converter:TimeSpanToIntConverter x:Key="TimeSpanIntConverter"></converter:TimeSpanToIntConverter>
@@ -217,7 +218,11 @@
                       ItemsSource="{Binding Playlist.Songs}" 
                       ItemTemplate="{StaticResource SongDataTemplate}"
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      SelectedItem="{Binding Playlist.SelectedSong}">
+                      SelectedItem="{Binding Playlist.SelectedSong}"
+                      dd:DragDrop.IsDropTarget="True"
+                      dd:DragDrop.DropHandler="{Binding}"
+                      dd:DragDrop.IsDragSource="True"
+                      dd:DragDrop.DragHandler="{Binding}">
             </ListView>
         </Grid>
     </DockPanel>

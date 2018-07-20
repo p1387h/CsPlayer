@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CsPlayer.Shared
 {
-    public class Song
+    public class Song : ISong
     {
         public string Name { get; private set; }
         public string FilePath { get; private set; }

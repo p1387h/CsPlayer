@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace CsPlayer.SongModule.ViewModels
 {
-    class SongViewModel : BindableBase
+    class SongViewModel : BindableBase, ISong
     {
         public string Name
         {
@@ -27,7 +27,7 @@ namespace CsPlayer.SongModule.ViewModels
         public bool Valid
         {
             get { return Song.Valid; }
-            private set
+            set
             {
                 Song.Valid = value;
                 this.RaisePropertyChanged(nameof(Valid));

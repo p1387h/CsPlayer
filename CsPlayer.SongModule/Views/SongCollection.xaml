@@ -155,7 +155,9 @@
                           BorderBrush="White"
                           Background="Transparent"
                           dd:DragDrop.IsDropTarget="True"
-                          dd:DragDrop.DropHandler="{Binding}">
+                          dd:DragDrop.DropHandler="{Binding}"
+                          dd:DragDrop.IsDragSource="True"
+                          dd:DragDrop.DragHandler="{Binding}">
                 </ListView>
             </Grid>
         </Border>
