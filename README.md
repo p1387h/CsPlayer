@@ -18,4 +18,4 @@ The player was a learning project that I used in order to familiarize myself wit
 - [NAudio](https://github.com/naudio/NAudio)
 
 ## License
-BSD 3 [license](https://github.com/p1387h/CsPlayer/blob/master/LICENSE.txt)
+BSD 3 [license](https://github.com/ph1387/CsPlayer/blob/master/LICENSE.txt)
